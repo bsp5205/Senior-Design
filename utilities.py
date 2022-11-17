@@ -98,11 +98,19 @@ def list_to_set(list_to_convert):
 :param path - the path of the java code
 This function will open the file and concat the text into one line to be used in javalang ast creation
 """
-def read_file(path):
+def read_file(path, comments):
     temp_file = open(path, 'r')
     lines = temp_file.readlines()
     concat_line = ''
+    comment_count = 0
     for line in lines:
-        concat_line += line.rstrip('\n')
-    return concat_line
+        # concat_line += line.rstrip('\n')
+        if '//' in line and not comments:
+            comment_count += 1
+            cut_pos = line.index('//')
+            line = line[:cut_pos]
+            concat_line += line.rstrip('\n')
+        else:
+            concat_line += line.rstrip('\n')
 
+    return concat_line, comment_count

@@ -2,7 +2,8 @@ public class main {
     public static void main(String[] args){
         System.out.println("Hello" + "World");
     }
-    public void test(){
+    //test comment
+    public void test(){ //test comment 2
         int x = 5;
         if (x == 5){
             System.out.println("X is 5");
