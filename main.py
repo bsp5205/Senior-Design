@@ -121,10 +121,27 @@ def calculate_depth_of_inheritance(tree):
 
 def calculate_coupling_between_objects(tree):
     # count number of times a different class's methods or attributes are used in the class in question
-    # maybe something to do with member attribute?
+    # get a list of all classes
+    # for each ClassDeclaration.body[x], pull each MethodDeclaration, and then create an entry {ClassDeclaration:MethodDeclaration}
+    # add using dictionary_name[key] = value
     cbo = 0
+    method_dict = {}
+    attribute_dict = {}
+    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    for class_num in range(len(class_list)):
+        class_body = class_list[class_num].body
+        for instance in class_body:
+            if isinstance(instance, javalang.tree.MethodDeclaration):
+                method_dict[class_list[class_num].name] = str(instance.name)
+                if len(method_dict) > 0 and instance.name in method_dict.values() and (class_list[class_num].name, instance.name) not in method_dict.items():
+                    cbo += 1
+            elif isinstance(instance, javalang.tree.FieldDeclaration):
+                attribute_dict[class_list[class_num].name] = str(instance.type.name)
+                if len(attribute_dict) > 0 and instance.type.name in attribute_dict.values() and (class_list[class_num].name, instance.type.name) not in attribute_dict.items():
+                    cbo += 1
 
-
+    # print(method_dict)
+    # print(attribute_dict)
     return cbo
 
 def main():

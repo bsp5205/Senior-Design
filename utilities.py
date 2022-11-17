@@ -11,7 +11,8 @@ def check_class(subtree):
             or isinstance(subtree, javalang.tree.VariableDeclarator) or isinstance(subtree, javalang.tree.IfStatement) \
             or isinstance(subtree, javalang.tree.WhileStatement) or isinstance(subtree, javalang.tree.MemberReference) \
             or isinstance(subtree, javalang.tree.BlockStatement) or isinstance(subtree, javalang.tree.MethodInvocation) \
-            or isinstance(subtree, javalang.tree.ForStatement) or isinstance(subtree, javalang.tree.ForControl):
+            or isinstance(subtree, javalang.tree.ForStatement) or isinstance(subtree, javalang.tree.ForControl)\
+            or isinstance(subtree, javalang.tree.FieldDeclaration):
         return True
     else:
         return False
