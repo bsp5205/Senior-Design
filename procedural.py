@@ -114,9 +114,9 @@ def calculate_Halstead_ops(tree):
     n1 = len(operators)
     n2 = len(operands)
 
-    print(operators)
-    print(operands)
-    print('N1: {} N2: {} n1: {} n2: {}'.format(N1, N2, n1, n2))
+    # print(operators)
+    # print(operands)
+    # print('N1: {} N2: {} n1: {} n2: {}'.format(N1, N2, n1, n2))
 
     return
 
