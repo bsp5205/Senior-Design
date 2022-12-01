@@ -2,12 +2,6 @@ import javalang
 import clang
 from enum import Enum
 
-
-class Language(Enum):  # enum for all possible file types
-    C = 1
-    Cpp = 2
-    Java = 3
-
 import utilities as util
 
 def calculate_McGabe_cyclomatic_complexity(tree):
@@ -104,17 +98,69 @@ def recursive_check(tree, subtree, height):
     # print(subtree)
     # children_list = subtree.implements
     # print(children_list)
-    implement_list = subtree.implements
-    for subtree_num in range(len(implement_list)):
-        # print(subtree.name, 'implements', subtree.implements[0].name)
-        class_list = util.custom_filter(tree, 'ClassDeclaration')
-        for class_num in range(len(class_list)):
-            # print('checking class', class_list[class_num].name)
-            if class_list[class_num].name == subtree.implements[0].name:
-                subtree = class_list[class_num]
-                return recursive_check(tree, subtree, height + 1)
+    if subtree.implements is not None:
+        implement_list = subtree.implements
+        for subtree_num in range(len(implement_list)):
+            # print(subtree.name, 'implements', subtree.implements[0].name)
+            class_list = util.custom_filter(tree, 'ClassDeclaration')
+            for class_num in range(len(class_list)):
+                # print('checking class', class_list[class_num].name)
+                if class_list[class_num].name == subtree.implements[0].name:
+                    subtree = class_list[class_num]
+                    return recursive_check(tree, subtree, height + 1)
+    elif subtree.extends is not None:
+        extend_list = subtree.extends
+        # tree of parent class
+        class_name = next(iter(extend_list))[1].name
+        return height+1
+
 
     return height
+
+def calculate_depth_of_inheritance(tree):
+    dit = 0
+    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    for class_num in range(len(class_list)):
+        class_being_checked = class_list[class_num]
+        dit_new = recursive_check(tree, class_being_checked, 0)
+        if dit_new > dit:
+            dit = dit_new
+
+    return dit
+
+def calculate_coupling_between_objects(tree):
+    # count number of times a different class's methods or attributes are used in the class in question
+    # get a list of all classes
+    # for each ClassDeclaration.body[x], pull each MethodDeclaration, and then create an entry {ClassDeclaration:MethodDeclaration}
+    # add using dictionary_name[key] = value
+    cbo = 0
+    # dictionaries to track {class name: method/attribute name}
+    method_dict = {}
+    attribute_dict = {}
+    # get a list of the classes
+    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    # check each class
+    for class_num in range(len(class_list)):
+        class_body = class_list[class_num].body
+        # for each instance in each class
+        for instance in class_body:
+            # add each method to a dictionary as {name:type}
+            if isinstance(instance, javalang.tree.MethodDeclaration):
+                method_dict[class_list[class_num].name] = str(instance.name)
+                # check if the new method type is in the dictionary and the new key/value does not already exist.
+                # if the {class name: method name} does exist, then skip it. If the class name is in the dictionary, then the class type exists in another class
+                if len(method_dict) > 0 and instance.name in method_dict.values() and (class_list[class_num].name, instance.name) not in method_dict.items():
+                    cbo += 1
+            elif isinstance(instance, javalang.tree.FieldDeclaration):
+                attribute_dict[class_list[class_num].name] = str(instance.type.name)
+                # check if the new attribute type is in the dictionary and the new key/value does not already exist.
+                # if the {class name:attribute name} does exist, then skip it. If the class name is in the dictionary, then the class type exists in another class
+                if len(attribute_dict) > 0 and instance.type.name in attribute_dict.values() and (class_list[class_num].name, instance.type.name) not in attribute_dict.items():
+                    cbo += 1
+
+    # print(method_dict)
+    # print(attribute_dict)
+    return cbo
 
 def recursive_parent_methods(tree):
     # method to assist polymorphism factor
@@ -159,42 +205,6 @@ def coupled_methods(class_name, couple):
             method = method + 1
 
     return methods
-
-def calculate_depth_of_inheritance(tree):
-    dit = 0
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
-    for class_num in range(len(class_list)):
-        class_being_checked = class_list[class_num]
-        dit_new = recursive_check(tree, class_being_checked, 0)
-        if dit_new > dit:
-            dit = dit_new
-
-    return dit
-
-def calculate_coupling_between_objects(tree):
-    # count number of times a different class's methods or attributes are used in the class in question
-    # get a list of all classes
-    # for each ClassDeclaration.body[x], pull each MethodDeclaration, and then create an entry {ClassDeclaration:MethodDeclaration}
-    # add using dictionary_name[key] = value
-    cbo = 0
-    method_dict = {}
-    attribute_dict = {}
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
-    for class_num in range(len(class_list)):
-        class_body = class_list[class_num].body
-        for instance in class_body:
-            if isinstance(instance, javalang.tree.MethodDeclaration):
-                method_dict[class_list[class_num].name] = str(instance.name)
-                if len(method_dict) > 0 and instance.name in method_dict.values() and (class_list[class_num].name, instance.name) not in method_dict.items():
-                    cbo += 1
-            elif isinstance(instance, javalang.tree.FieldDeclaration):
-                attribute_dict[class_list[class_num].name] = str(instance.type.name)
-                if len(attribute_dict) > 0 and instance.type.name in attribute_dict.values() and (class_list[class_num].name, instance.type.name) not in attribute_dict.items():
-                    cbo += 1
-
-    # print(method_dict)
-    # print(attribute_dict)
-    return cbo
 
 def calculate_method_hiding_factor(tree):
     # counts the number of hidden methods in a class
@@ -304,7 +314,7 @@ def calculate_coupling_factor(tree):
 
         elif cur_class.extends is not None:
             # coupling due to inheritance is not counted
-            extend_list = tree.extends
+            extend_list = cur_class.extends
             parent = next(iter(extend_list))[1].name
 
         invoc_method_list = util.custom_filter(tree, 'MethodInvocation')
@@ -371,12 +381,15 @@ def main():
         # demonstrate the 'search' function
         attribute_set = util.get_attribute_set(tree)
         value_list = []
-        search_attr = 'value'
+        search_attr = 'name'
         for x in attribute_set:
             value_list = util.search(tree, x, search_attr)
+        print(value_list)
 
         # print the tree
         util.pretty_print(tree)
+
+        # script tests
         print('calculate_McGabe_cyclomatic_complexity:', calculate_McGabe_cyclomatic_complexity(tree))
         print('calculate_SLOC:', calculate_SLOC(tree))
         print('calculate_comment_percentage:', calculate_comment_percentage(tree, comment_count))
@@ -390,6 +403,8 @@ def main():
         print('calculate_attribute_inheritance_factor:', calculate_attribute_inheritance_factor(tree))
         print('calculate_coupling_factor:', calculate_coupling_factor(tree))
         print('calculate_polymorphism_factor:', calculate_polymorphism_factor(tree))
+
+
 
 if __name__ == '__main__':
     main()
