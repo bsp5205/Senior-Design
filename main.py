@@ -1,5 +1,5 @@
 import javalang
-# import clang
+import clang
 from enum import Enum
 
 
