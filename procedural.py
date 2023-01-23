@@ -247,7 +247,7 @@ def print_all(tree):
     print('E: ' + '{0:.3g} '.format(calculate_Halstead_program_effort()))
     print('B: ' + '{0:.3g} '.format(calculate_Halstead_number_of_bugs()))
     print('TC: ' + '{0:.3g} '.format(calculate_token_count()))
-    print('MCC: ' + str(calculate_MMCC(tree)))
+    # print('MCC: ' + str(calculate_MMCC(tree)))
 def main():
     path = 'main.java'
 

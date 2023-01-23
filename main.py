@@ -391,6 +391,7 @@ def main():
         # util.pretty_print(tree)
 
         # script tests
+        print('OO Metrics:')
         print('calculate_McGabe_cyclomatic_complexity:', calculate_McGabe_cyclomatic_complexity(tree))
         print('calculate_SLOC:', calculate_SLOC(tree))
         print('calculate_comment_percentage:', calculate_comment_percentage(tree, comment_count))
@@ -398,12 +399,14 @@ def main():
         print('calculate_depth_of_inheritance:', calculate_depth_of_inheritance(tree))
         print('calculate_coupling_between_objects:', calculate_coupling_between_objects(tree))
 
-        print('\ncalculate_method_hiding_factor:', calculate_method_hiding_factor(tree))
+        print('\nMOOD Metrics:\ncalculate_method_hiding_factor:', calculate_method_hiding_factor(tree))
         print('calculate_attribute_hiding_factor:', calculate_attribute_hiding_factor(tree))
         print('calculate_method_inheritance_factor:', calculate_method_inheritance_factor(tree))
         print('calculate_attribute_inheritance_factor:', calculate_attribute_inheritance_factor(tree))
         print('calculate_coupling_factor:', calculate_coupling_factor(tree))
         print('calculate_polymorphism_factor:', calculate_polymorphism_factor(tree))
+
+        print('\nProcedural Metrics:')
         procedural.main()
 
 
