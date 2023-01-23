@@ -1,5 +1,6 @@
 import javalang
 import clang
+import procedural
 from enum import Enum
 
 import utilities as util
@@ -377,17 +378,17 @@ def main():
     if '.java' in path:
         # create the tree
         tree = javalang.parse.parse(concat_line)
-        print(tree)
+        # print(tree)
         # demonstrate the 'search' function
         attribute_set = util.get_attribute_set(tree)
         value_list = []
         search_attr = 'name'
         for x in attribute_set:
             value_list = util.search(tree, x, search_attr)
-        print(value_list)
+        # print(value_list)
 
         # print the tree
-        util.pretty_print(tree)
+        # util.pretty_print(tree)
 
         # script tests
         print('calculate_McGabe_cyclomatic_complexity:', calculate_McGabe_cyclomatic_complexity(tree))
@@ -403,7 +404,7 @@ def main():
         print('calculate_attribute_inheritance_factor:', calculate_attribute_inheritance_factor(tree))
         print('calculate_coupling_factor:', calculate_coupling_factor(tree))
         print('calculate_polymorphism_factor:', calculate_polymorphism_factor(tree))
-
+        procedural.main()
 
 
 if __name__ == '__main__':
