@@ -1,6 +1,6 @@
 import javalang
 import clang
-import procedural
+import procedural_java
 from enum import Enum
 
 import utilities as util
@@ -407,7 +407,7 @@ def main():
         print('calculate_polymorphism_factor:', calculate_polymorphism_factor(tree))
 
         print('\nProcedural Metrics:')
-        procedural.main()
+        procedural_java.main()
 
 
 if __name__ == '__main__':
