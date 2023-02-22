@@ -156,7 +156,7 @@ def mood_PF(result, weight):
 
 def main():
     # test of the functions
-    print("CP Result: ", comment_percentage(3, 50))
+    print("CP Result: ", comment_percentage(2, 50))
     print("CC Result: ", mcgabe_cc(26, 50, 100))
     print("CBO/DIT Result:", cbo_dit(4, 100))
     print("--Mood Results--")
