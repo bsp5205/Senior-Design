@@ -61,6 +61,8 @@ def cbo_dit(result, weight):
 
     # too strong divide by 2
     percent_error /= 2
+    if percent_error < 0:
+        percent_error = 0
     return round(100 - percent_error) if percent_error < 100 else 0
 
 
@@ -68,6 +70,7 @@ def cbo_dit(result, weight):
 # Where I get them
 # https://www.aivosto.com/project/help/pm-oo-mood.html
 def mood_MHF(result, weight):
+    result = result * 100
     if weight == 0:
         return 100
     percent_error = 0
@@ -94,11 +97,12 @@ def mood_AHF(result, weight):
     if weight == 0:
         return 100
     # all attributes should be hidden weight effects % error alone
-    percent_error = 100 * ((100 - result) / 100)
+    percent_error = 100 * ((1 - result) / 1)
     return round(100 - (percent_error * (2 * weight/100)))
 
 
 def mood_MIF(result, weight):
+    result = result * 100
     if weight == 0:
         return 100
     # Just make sure it is not extreme in either direction
@@ -123,23 +127,23 @@ def mood_MIF(result, weight):
 def mood_AIF(result, weight):
     if weight == 0:
         return 100
-        # attribute inheritance should be less than 50% <-- very lenient
-        limit = 48 + 24 * (.5 - (weight / 100))
-        if result < limit:
-            return 100
-        percent_error = 100 * ((limit - result) / limit)
-        return round(100 - percent_error) if percent_error < 100 else 0
+    # attribute inheritance should be less than 50% <-- very lenient
+    limit = 48 + 24 * (.5 - (weight / 100))
+    if result < limit:
+        return 100
+    percent_error = 100 * ((limit - result) / limit)
+    return round(100 - percent_error) if percent_error < 100 else 0
 
 
 def mood_CF(result, weight):
     if weight == 0:
         return 100
-        # coupling factor should be less than 12%
-        limit = 12 + 24 * (1 - (weight / 100))
-        if result < limit:
-            return 100
-        percent_error = 100 * ((limit - result) / limit)
-        return round(100 - percent_error) if percent_error < 100 else 0
+    # coupling factor should be less than 12%
+    limit = 12 + 24 * (1 - (weight / 100))
+    if result < limit:
+        return 100
+    percent_error = 100 * ((limit - result) / limit)
+    return round(100 - percent_error) if percent_error < 100 else 0
 
 
 

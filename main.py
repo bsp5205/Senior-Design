@@ -1,7 +1,7 @@
 import javalang
 import clang
 import procedural_java
-import evaluate_metrics
+import evaluate_metrics as em
 import mood
 
 import utilities as util
@@ -192,6 +192,9 @@ def coupled_methods(class_name, couple):
 def main():
     # set the path
     path = 'BigTest.java'
+    # path = 'DNA.java'
+    # path = 'DNA1.java'
+    # path = 'DNA2.java'
 
     # get the concat file
     concat_line, comment_count = util.read_file(path, 0)
@@ -230,6 +233,18 @@ def main():
 
         print('\nProcedural Metrics:')
         procedural_java.main()
+
+        print("\nMetric score evaluation")
+        print("CP Result: ", em.comment_percentage(calculate_comment_percentage(tree, comment_count), 50))
+        print("CC Result: ", em.mcgabe_cc(calculate_weighted_method_per_class(tree), 100, calculate_SLOC(tree)))
+        print("CBO/DIT Result:", em.cbo_dit(calculate_depth_of_inheritance(tree), 50))
+        print("--Mood Results--")
+        print("MHF: ", em.mood_MHF(mood.calculate_method_hiding_factor(tree), 50))
+        print("AHF: ", em.mood_AHF(mood.calculate_attribute_hiding_factor(tree), 50))
+        print("MIF: ", em.mood_MIF(mood.calculate_method_inheritance_factor(tree), 50))
+        print("AIF: ", em.mood_AIF(mood.calculate_attribute_inheritance_factor(tree), 50))
+        print("CF: ", em.mood_CF(mood.calculate_coupling_factor(tree), 50))
+        print("PF: ", em.mood_PF(mood.calculate_polymorphism_factor(tree), 50))
 
 
 if __name__ == '__main__':
