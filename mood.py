@@ -52,9 +52,8 @@ def calculate_method_hiding_factor(tree):
                 # methods without access modifiers in java are public
                 if len(instance.modifiers) > 0:
                     meth_vis = next(iter(instance.modifiers))
-
-                if(meth_vis == 'private'):
-                    hidden_meth = hidden_meth + 1
+                    if (meth_vis == 'private'):
+                        hidden_meth = hidden_meth + 1
 
     MHF = hidden_meth/total_meth
     return MHF
@@ -77,9 +76,8 @@ def calculate_attribute_hiding_factor(tree):
                 # methods without access modifiers in java are public?
                 if len(instance.modifiers) > 0:
                     attr_vis = next(iter(instance.modifiers))
-
-                if(attr_vis == 'private'):
-                    hidden_attr = hidden_attr + 1
+                    if (attr_vis == 'private'):
+                        hidden_attr = hidden_attr + 1
 
     # local variables are not attributes
     if total_attr is 0:

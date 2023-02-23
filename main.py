@@ -191,7 +191,7 @@ def coupled_methods(class_name, couple):
 
 def main():
     # set the path
-    path = 'BigTest.java'
+    path = 'DNA3.java'
     # path = 'DNA.java'
     # path = 'DNA1.java'
     # path = 'DNA2.java'
