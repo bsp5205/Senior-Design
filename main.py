@@ -176,21 +176,22 @@ def coupled_methods(class_name, couple):
     methods = 0
 
     path = class_name + '.java'
-    concat_line, comment_count = util.read_file(path, 0)
-    tree = javalang.parse.parse(concat_line)
-
-    invoc_method_list = util.custom_filter(tree, 'MethodInvocation')
-    for invoc_method_num in range(len(invoc_method_list)):
-        cur_method = invoc_method_list[invoc_method_num]
-        if (cur_method.qualifier == couple):
-            method = method + 1
-
-    return methods
+    # if finding the file does not work
+    try:
+        concat_line, comment_count = util.read_file(path, 0)
+        tree = javalang.parse.parse(concat_line)
+        invoc_method_list = util.custom_filter(tree, 'MethodInvocation')
+        for invoc_method_num in range(len(invoc_method_list)):
+            cur_method = invoc_method_list[invoc_method_num]
+            if (cur_method.qualifier == couple):
+                methods = methods + 1
+    finally:
+        return methods
 
 
 def main():
     # set the path
-    path = 'main.java'
+    path = 'BigTest.java'
 
     # get the concat file
     concat_line, comment_count = util.read_file(path, 0)

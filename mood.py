@@ -1,5 +1,5 @@
 import javalang
-import main
+import main as home_file
 import utilities as util
 
 
@@ -14,23 +14,25 @@ def recursive_parent_methods(tree):
     class_name = next(iter(extend_list))[1].name
 
     path = class_name + '.java'
-    concat_line, comment_count = util.read_file(path, 0)
-    parent_tree = javalang.parse.parse(concat_line)
-    # check if parent extends
-    class_list = util.custom_filter(parent_tree, 'ClassDeclaration')
-    for class_num in range(len(class_list)):
-        cur_class = class_list[class_num]
-        if cur_class.extends is not None:
-            add_methods = recursive_parent_methods(cur_class)
 
-    # add these methods to parent methods if not private
-    parent_method_list = util.custom_filter(parent_tree, 'MethodDeclaration')
-    for method_num in range(len(parent_method_list)):
-        cur_method = parent_method_list[method_num]
-        if next(iter(cur_method.modifiers)) != 'private':
-            add_methods = add_methods + 1
+    try:
+        concat_line, comment_count = util.read_file(path, 0)
+        parent_tree = javalang.parse.parse(concat_line)
+        # check if parent extends
+        class_list = util.custom_filter(parent_tree, 'ClassDeclaration')
+        for class_num in range(len(class_list)):
+            cur_class = class_list[class_num]
+            if cur_class.extends is not None:
+                add_methods = recursive_parent_methods(cur_class)
 
-    return add_methods
+        # add these methods to parent methods if not private
+        parent_method_list = util.custom_filter(parent_tree, 'MethodDeclaration')
+        for method_num in range(len(parent_method_list)):
+            cur_method = parent_method_list[method_num]
+            if next(iter(cur_method.modifiers)) != 'private':
+                add_methods = add_methods + 1
+    finally:
+        return add_methods
 
 
 def calculate_method_hiding_factor(tree):
@@ -46,7 +48,11 @@ def calculate_method_hiding_factor(tree):
         for instance in class_body:
             if isinstance(instance, javalang.tree.MethodDeclaration):
                 total_meth = total_meth + 1
-                meth_vis = next(iter(instance.modifiers))
+
+                # methods without access modifiers in java are public
+                if len(instance.modifiers) > 0:
+                    meth_vis = next(iter(instance.modifiers))
+
                 if(meth_vis == 'private'):
                     hidden_meth = hidden_meth + 1
 
@@ -67,11 +73,19 @@ def calculate_attribute_hiding_factor(tree):
         for instance in class_body:
             if isinstance(instance, javalang.tree.FieldDeclaration):
                 total_attr = total_attr + 1
-                attr_vis = next(iter(instance.modifiers))
+
+                # methods without access modifiers in java are public?
+                if len(instance.modifiers) > 0:
+                    attr_vis = next(iter(instance.modifiers))
+
                 if(attr_vis == 'private'):
                     hidden_attr = hidden_attr + 1
 
-    AHF = hidden_attr/total_attr
+    # local variables are not attributes
+    if total_attr is 0:
+        AHF = 0.0
+    else:
+        AHF = hidden_attr/total_attr
     return AHF
 
 
@@ -94,7 +108,7 @@ def calculate_method_inheritance_factor(tree):
     invoc_method_list = util.custom_filter(tree, 'MethodInvocation')
     for invoc_method_num in range(len(invoc_method_list)):
         cur_method = invoc_method_list[invoc_method_num]
-        if(cur_method.qualifier != ''):
+        if(cur_method.qualifier != '' and cur_method.qualifier != None):
             cur_method_string = cur_method.qualifier + "." + cur_method.member
             if(cur_method_string not in inherit_meth):
                 inherit_meth.append(cur_method_string)
@@ -119,12 +133,17 @@ def calculate_attribute_inheritance_factor(tree):
     invoc_attr_list = util.custom_filter(tree, 'MemberReference')
     for invoc_attr_num in range(len(invoc_attr_list)):
         cur_attr = invoc_attr_list[invoc_attr_num]
-        if (cur_attr.qualifier != ''):
+        if (cur_attr.qualifier != '' and cur_attr.qualifier != None):
             cur_attr_string = cur_attr.qualifier + "'" + cur_attr.member
             if (cur_attr_string not in inherit_attr):
                 inherit_attr.append(cur_attr_string)
     tot_attr = len(inherit_attr) + def_attr
-    AIF = len(inherit_attr) / tot_attr
+
+    if tot_attr is 0:
+        AIF = 0.0
+    else:
+        AIF = len(inherit_attr) / tot_attr
+
     return AIF
 
 
@@ -151,7 +170,7 @@ def calculate_coupling_factor(tree):
         invoc_method_list = util.custom_filter(tree, 'MethodInvocation')
         for invoc_method_num in range(len(invoc_method_list)):
             cur_method = invoc_method_list[invoc_method_num]
-            if (cur_method.qualifier != '' and cur_method.qualifier != parent):
+            if (cur_method.qualifier != '' and cur_method.qualifier != parent and cur_method.qualifier != None):
                 cur_method_string = cur_method.qualifier + "." + cur_method.member
                 if cur_method.qualifier not in coupled_class and cur_method.qualifier != 'System.out':
                     coupled_class.append(cur_method.qualifier)
@@ -159,10 +178,7 @@ def calculate_coupling_factor(tree):
                     couple_meth.append(cur_method_string)
 
         for qualifier in coupled_class:
-            print(qualifier)
-            print("\n")
-            print(cur_class.name)
-            max_couples = main.coupled_methods(qualifier, cur_class.name)
+            max_couples = home_file.coupled_methods(qualifier, cur_class.name)
 
     couples = len(couple_meth)
     if max_couples != 0:
