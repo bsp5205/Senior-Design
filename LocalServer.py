@@ -32,10 +32,4 @@ def postME():
 """
 
 if __name__ == "__main__":
-    #current_canvas_ip = '10.32.68.158'
-    #response = ca.send_request(current_canvas_ip)
-    #print("This is an Example of sending canvas a request.")
-    #print("This is a self request:")
-    #print(response.attributes)
-
     app.run(debug=True)
