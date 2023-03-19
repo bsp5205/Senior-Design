@@ -10,39 +10,20 @@ def calculate_McGabe_cyclomatic_complexity(tree):
     # https://www.theserverside.com/feature/How-to-calculate-McCabe-cyclomatic-complexity-in-Java
     cc = 1
     cc_list = []
-    # get relevant lists
+
+    # Get relevant lists
     method_list = util.custom_filter(tree, 'MethodDeclaration')
-    # iterative_list = util.custom_filter(tree, 'WhileStatement') + util.custom_filter(tree, 'ForStatement')
 
-    for method_num in range(len(method_list)):  # loop through if/else if/else statements
-        body_list = method_list[method_num].body
-        for body_list_num in range(len(body_list)):
-            if isinstance(body_list[body_list_num], javalang.tree.IfStatement):
-                # print('if')
-                cc += 1  # if
-            if isinstance(body_list[body_list_num], javalang.tree.IfStatement) and hasattr(body_list[body_list_num], 'else_statement'):
-                # print('elseif')
-                cc += 1  # else if
-            if isinstance(body_list[body_list_num], javalang.tree.IfStatement) and hasattr(body_list[body_list_num], 'then_statement'):
-                # print('else')
-                cc += 1  # else
-
-            if isinstance(body_list[body_list_num], javalang.tree.WhileStatement):
-                # print('while')
-                cc += 1  # WhileStatement
-
-            if isinstance(body_list[body_list_num], javalang.tree.ForStatement):
-                # print('for')
-                cc += 1  # ForStatement
+    for method_num in range(len(method_list)):
 
         # Turn cc_list into a tuple of the cc and the SLOC in the method for analysis
         # creat a dummy tree so calculate_SLOC works
         dummy_tree = javalang.parser.tree.CompilationUnit(package=0, imports=0, types=[method_list[method_num]])
+        cc += len(util.custom_filter(dummy_tree, 'WhileStatement') + util.custom_filter(dummy_tree, 'ForStatement') + util.custom_filter(dummy_tree, 'IfStatement'))
         method_SLOC = calculate_SLOC(dummy_tree)
 
         cc_list.append((cc, method_SLOC))
         cc = 1
-
     return cc_list
 
 def calculate_SLOC(tree):
@@ -191,10 +172,11 @@ def coupled_methods(class_name, couple):
 
 def main():
     # set the path
-    path = 'DNA3.java'
+    # path = 'DNA3.java'
     # path = 'DNA.java'
     # path = 'DNA1.java'
     # path = 'DNA2.java'
+    path = 'cyclomatic.java'
 
     # get the concat file
     concat_line, comment_count = util.read_file(path, 0)
