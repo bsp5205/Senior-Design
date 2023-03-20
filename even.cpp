@@ -1,16 +1,7 @@
-#include <iostream>
-using namespace std;
-
-int main() {
-  int n;
-
-  cout << "Enter an integer: ";
-  cin >> n;
-
-  if ( n % 2 == 0)
-    cout << n << " is even.";
-  else
-    cout << n << " is odd.";
-
-  return 0;
+main()
+{
+  int a, b, c, avg;
+  scanf("%d %d %d", &a, &b, &c);
+  avg = (a+b+c)/3;
+  printf("avg = %d", avg);
 }
