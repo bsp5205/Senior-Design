@@ -15,7 +15,8 @@ def index():
     print(flask.request.method)
     print(flask.request.form)
     if flask.request.method == "POST":
-        handle_request.launch_page(flask.request.form['custom_canvas_api_domain'], flask.request.form['custom_canvas_course_id'])
+        assigns = handle_request.launch_page(flask.request.form['custom_canvas_api_domain'], flask.request.form['custom_canvas_course_id'])
+        # send to the page opening this stuff
         return render_template('home.html')
     # Possibly send to error page
     return render_template('home.html')

@@ -3,6 +3,7 @@ import clang
 import procedural_java
 import evaluate_metrics as em
 import mood
+import handle_request as hr
 
 import utilities as util
 
@@ -119,7 +120,7 @@ def calculate_depth_of_inheritance(tree):
 
     return dit
 
-def calculate_coupling_between_objects(tree):
+def calculate_coupling_between_objects(tree, cbo_tuples):
     # count number of times a different class's methods or attributes are used in the class in question
     # get a list of all classes
     # for each ClassDeclaration.body[x], pull each MethodDeclaration, and then create an entry {ClassDeclaration:MethodDeclaration}
@@ -178,6 +179,21 @@ def main():
     # path = 'DNA2.java'
     path = 'cyclomatic.java'
 
+    # submission holds user_id gets user from it
+    # this
+    # all files contained in a project
+    files = hr.get_submission_files("URL")
+    user = hr.get_api(canvas_ip)
+
+    # setup each list containing file information
+    file_metrics_dicts = []
+    cbo_tuples = []
+    for file in files:
+        # list of dicts to hold the metric values
+        file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
+        # list of tuple to hold the coupled files
+        cbo_tuples.append((file, []))
+
     # get the concat file
     concat_line, comment_count = util.read_file(path, 0)
 
@@ -204,7 +220,7 @@ def main():
         print('calculate_comment_percentage:', calculate_comment_percentage(tree, comment_count))
         print('calculate_weighted_method_per_class:', calculate_weighted_method_per_class(tree))
         print('calculate_depth_of_inheritance:', calculate_depth_of_inheritance(tree))
-        print('calculate_coupling_between_objects:', calculate_coupling_between_objects(tree))
+        print('calculate_coupling_between_objects:', calculate_coupling_between_objects(tree, cbo_tuples))
 
         print('\ncalculate_method_hiding_factor:', mood.calculate_method_hiding_factor(tree))
         print('calculate_attribute_hiding_factor:', mood.calculate_attribute_hiding_factor(tree))

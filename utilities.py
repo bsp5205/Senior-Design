@@ -104,14 +104,29 @@ def read_file(path, comments):
     lines = temp_file.readlines()
     concat_line = ''
     comment_count = 0
+
+    in_comment_block = 0
+
     for line in lines:
-        # concat_line += line.rstrip('\n')
-        if '//' in line and not comments:
+        if in_comment_block:
             comment_count += 1
-            cut_pos = line.index('//')
-            line = line[:cut_pos]
             concat_line += line.rstrip('\n')
+            if '*/' in line:
+                in_comment_block = 0
         else:
-            concat_line += line.rstrip('\n')
+            # concat_line += line.rstrip('\n')
+            if '//' in line and not comments:
+                comment_count += 1
+                cut_pos = line.index('//')
+                line = line[:cut_pos]
+                concat_line += line.rstrip('\n')
+            elif '/*' in line and not comments:
+                comment_count += 1
+                in_comment_block = 1
+                cut_pos = line.index('/*')
+                #line = line[:cut_pos]
+                concat_line += line.rstrip('\n')
+            else:
+                concat_line += line.rstrip('\n')
 
     return concat_line, comment_count
