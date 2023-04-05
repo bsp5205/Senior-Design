@@ -142,7 +142,16 @@ def halstead_program_volume(cursor):
 
 # Calculates difficulty (D)
 def halstead_difficulty(cursor):
-    pass
+    return 1
+
+def halstead_level(cursor):
+    return 1 / halstead_difficulty(cursor)
+
+def halstead_effort(cursor):
+    return halstead_program_volume(cursor) * halstead_difficulty(cursor)
+
+def halstead_bugs(cursor):
+    return halstead_program_volume(cursor) / 3000
 
 # Calculate token count (TC)
 def token_count(cursor):
@@ -154,7 +163,7 @@ def token_count(cursor):
         
     return count
 
-# Print all of the procedural function calculations
+# Print all the procedural function calculations
 def print_all():
     # Create 
     index = ci.Index.create()
@@ -171,6 +180,7 @@ def print_all():
 
 # Main function
 def main():
+    ci.Config.set_library_file("C:/Users/Alex/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/site-packages/clang/native/libclang.dll");
     print_all()
     
 # Make sure doesn't run on import

@@ -18,7 +18,7 @@ def calculate_McGabe_cyclomatic_complexity(tree):
     for method_num in range(len(method_list)):
 
         # Turn cc_list into a tuple of the cc and the SLOC in the method for analysis
-        # creat a dummy tree so calculate_SLOC works
+        # Create a dummy tree so calculate_SLOC works
         dummy_tree = javalang.parser.tree.CompilationUnit(package=0, imports=0, types=[method_list[method_num]])
         cc += len(util.custom_filter(dummy_tree, 'WhileStatement') + util.custom_filter(dummy_tree, 'ForStatement') + util.custom_filter(dummy_tree, 'IfStatement'))
         method_SLOC = calculate_SLOC(dummy_tree)
@@ -182,17 +182,17 @@ def main():
     # submission holds user_id gets user from it
     # this
     # all files contained in a project
-    files = hr.get_submission_files("URL")
-    user = hr.get_api(canvas_ip)
+    # files = hr.get_submission_file("URL")
+    # user = hr.get_api(canvas_ip)
 
     # setup each list containing file information
-    file_metrics_dicts = []
-    cbo_tuples = []
-    for file in files:
-        # list of dicts to hold the metric values
-        file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
-        # list of tuple to hold the coupled files
-        cbo_tuples.append((file, []))
+    # file_metrics_dicts = []
+    # cbo_tuples = []
+    # for file in files:
+    #     # list of dicts to hold the metric values
+    #     file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
+    #     # list of tuple to hold the coupled files
+    #     cbo_tuples.append((file, []))
 
     # get the concat file
     concat_line, comment_count = util.read_file(path, 0)
@@ -211,7 +211,7 @@ def main():
         # print(value_list)
 
         # print the tree
-        util.pretty_print(tree)
+        # util.pretty_print(tree)
 
         # script tests
         print('OO Metrics:')
@@ -220,7 +220,7 @@ def main():
         print('calculate_comment_percentage:', calculate_comment_percentage(tree, comment_count))
         print('calculate_weighted_method_per_class:', calculate_weighted_method_per_class(tree))
         print('calculate_depth_of_inheritance:', calculate_depth_of_inheritance(tree))
-        print('calculate_coupling_between_objects:', calculate_coupling_between_objects(tree, cbo_tuples))
+        # print('calculate_coupling_between_objects:', calculate_coupling_between_objects(tree, cbo_tuples))
 
         print('\ncalculate_method_hiding_factor:', mood.calculate_method_hiding_factor(tree))
         print('calculate_attribute_hiding_factor:', mood.calculate_attribute_hiding_factor(tree))

@@ -65,23 +65,23 @@ def get_submission_file(attachments):
         # gets the request from url
         req = requests.get(file['url'])
 
-        # if the file is good unzip and send to AssignmentFiles
+        # if the file is good unzip and send to TestAssignmentFiles
         if req.ok:
-            file_path = 'AssignmentFiles/' + file['display_name']
+            file_path = 'TestAssignmentFiles/' + file['display_name']
             open(file_path, 'wb').write(req.content)
             # if zip file
             # zip_sub = zipfile.ZipFile(io.BytesIO(req.content))
-            # zip_sub.extractall('AssignmentFiles')
+            # zip_sub.extractall('TestAssignmentFiles')
         else:
             print("There was an error in the submission download request")
 
     # Return the list of unzipped files
-    files = os.listdir('AssignmentFiles')
+    files = os.listdir('TestAssignmentFiles')
     return files
 
 
 # remove the submission files from the temporary directory after use
 def remove_submission_files(files):
     for file in files:
-        os.remove('AssignmentFiles/' + file)
+        os.remove('TestAssignmentFiles/' + file)
 
