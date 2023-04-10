@@ -89,7 +89,9 @@ def create_file(code, name, id, scores):
 
 scores_1 = [complexity_metric_scores, cohesion_metric_scores, coupling_metric_scores, naming_metric_scores, general_metric_scores]
 scores_2 = []
-file_1 = create_file('test', 'file1', 123, scores_1)
+code = 'import java.io.File;\n' + 'import java.io.FileNotFoundException;\n' + 'import java.util.Scanner;\n' + '\n' +'//\n' +'// DNAApp.java\n' +'//\n' +'// class to read in a file from the user and output the\n' +'//\n' +'// @author Kenneth Burt\n' +'//\n' +'public class DNAApp extends DNA1 {\n' +'\n' + '    public String Header;\n' +'    public String DNA = "";\n' +'    private String input;\n' +'\n' +'    public static void main(String[] args) throws FileNotFoundException {\n' +'\n' +'        Scanner keyBoard = new Scanner(System.in);\n' +'\n' +'        System.out.println("What is the name of the file?");\n' +'        input = keyBoard.nextLine();\n' +'\n' +'        File DNAFile = new File(input);\n' +'        Scanner DNAScan = new Scanner(DNAFile);\n' +'\n' +'        Header = DNAScan.nextLine();\n' +'\n' +'        int iterator = 2;\n' +'        while(DNAScan.hasNextLine()) {\n' +'            DNA = DNA + DNAScan.nextLine();\n' +'            iterator++;\n' +'        }\n' +'\n' +'        DNA ProteinCodes = new DNA(Header, DNA);\n' +'\n' +'        System.out.println(Header + "\\n" + ProteinCodes.getPCRs().toString());\n' +'    }\n' +'}\n'
+language = "java"
+file_1 = create_file(code, 'file1', 123, scores_1)
 file_2 = create_file('test2', 'file2', 456, scores_1)
 submission_1 = create_submission('December 30, 2022 at 9:37PM', [file_1, file_2])
 student_1 = create_student('Student 1', '123', submission_1)
@@ -348,7 +350,7 @@ with a.body(onload='loadFunction()'):
                                 counter += 1
         with a.div(klass='grid-container'):
             with a.div(klass='item1', style='background-color: #f5f5f5'):
-                a.pre(_t=focus_file.code)
+                a.pre(_t='<code data-language="'+language+'" id="file-code">'+focus_file.code+'</code>')
             with a.div(klass='item2'):
                 with a.div():
                     a.span(klass='grid-title', _t='Quality Metric Analysis (QMA)')
