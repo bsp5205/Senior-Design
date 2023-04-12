@@ -128,5 +128,6 @@ def read_file(path, comments):
                 concat_line += line.rstrip('\n')
             else:
                 concat_line += line.rstrip('\n')
+    temp_file.close()
 
     return concat_line, comment_count

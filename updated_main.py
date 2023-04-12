@@ -8,6 +8,7 @@ import main as m
 import procedural_c as proc
 import clang.cindex as ci
 import sys
+import evaluate_metrics as em
 
 file_list = {}
 
@@ -26,48 +27,61 @@ def assess_every_file(directory):
 
         if file.endswith(".java"):
 
-            tree = javalang.parse.parse(concat_line)
+            try:
+                tree = javalang.parse.parse(concat_line)
 
-            attribute_list = {
-                # Mood Metrics
-                'AHF': mood.calculate_attribute_hiding_factor(tree),
-                'MHF': mood.calculate_method_hiding_factor(tree),
-                'MIF': mood.calculate_method_inheritance_factor(tree),
-                'AIF': mood.calculate_attribute_inheritance_factor(tree),
-                'POF': mood.calculate_polymorphism_factor(tree),
-                'COF': mood.calculate_coupling_factor(tree),
+                print(file + str(m.calculate_comment_percentage(tree, comment_count)))
 
-                # OO Metrics
-                'CC': m.calculate_McGabe_cyclomatic_complexity(tree),
-                'SLOC': m.calculate_SLOC(tree),
-                'CP': m.calculate_comment_percentage(tree, comment_count),
-                'WMC': m.calculate_weighted_method_per_class(tree),
-                'DIT': m.calculate_depth_of_inheritance(tree)
-                # attribute_list['CBO'] = main.calculate_coupling_between_objects(tree)
-            }
+                attribute_list = {
+                    # Mood Metrics
+
+                    'AHF': em.mood_AHF(mood.calculate_attribute_hiding_factor(tree), 50),
+                    'MHF': em.mood_MHF(mood.calculate_method_hiding_factor(tree), 50),
+                    'MIF': em.mood_MIF(mood.calculate_method_inheritance_factor(tree), 50),
+                    'AIF': em.mood_AIF(mood.calculate_attribute_inheritance_factor(tree), 50),
+                    'POF': em.mood_PF(mood.calculate_polymorphism_factor(tree), 50),
+                    'COF': em.mood_CF(mood.calculate_coupling_factor(tree), 50),
+
+                    # OO Metrics
+                    'CC': em.mcgabe_cc(m.calculate_weighted_method_per_class(tree), 100, m.calculate_SLOC(tree)),
+                    'SLOC': m.calculate_SLOC(tree),
+                    'CP': em.comment_percentage(m.calculate_comment_percentage(tree, comment_count), 50),
+                    'WMC': m.calculate_weighted_method_per_class(tree),
+                    'DIT': em.cbo_dit(m.calculate_depth_of_inheritance(tree), 50)
+                    # attribute_list['CBO'] = main.calculate_coupling_between_objects(tree)
+                }
+            except Exception as e:
+                print("Java Analysis Failed")
+                exec_type, exec_obj, exec_tb = sys.exc_info()
+                fname = os.path.split(exec_tb.tb_frame.f_code.co_filename)[1]
+                print(exec_type, fname, exec_tb.tb_lineno)
+
             file_list[file] = attribute_list
         elif file.endswith(".cpp") or file.endswith(".c"):
-            # Clang setup
-            index = ci.Index.create()
-            tu = index.parse(file)
-            filename = tu.spelling
+            try:
+                # Clang setup
+                index = ci.Index.create()
+                tu = index.parse(file)
+                filename = tu.spelling
 
-            attribute_list = {
-                'ELOC': proc.effective_lines_of_code(filename),
-                'KLOC': proc.kilo_lines_of_code(filename),
-                'ABC': proc.assignments_branches_conditionals(tu.cursor),
-                'N': proc.halstead_program_length(tu.cursor),
-                'n': proc.halstead_program_vocabulary(tu.cursor),
-                'V': proc.halstead_program_volume(tu.cursor),
-                'D': proc.halstead_difficulty(tu.cursor),
-                'L': proc.halstead_level(tu.cursor),
-                'E': proc.halstead_effort(tu.cursor),
-                'B': proc.halstead_bugs(tu.cursor),
-                'TC': proc.token_count(tu.cursor)
-            }
-
-            # Procedural Metrics
-
+                attribute_list = {
+                    'ELOC': proc.effective_lines_of_code(filename),
+                    'KLOC': proc.kilo_lines_of_code(filename),
+                    'ABC': proc.assignments_branches_conditionals(tu.cursor),
+                    'N': proc.halstead_program_length(tu.cursor),
+                    'n': proc.halstead_program_vocabulary(tu.cursor),
+                    'V': proc.halstead_program_volume(tu.cursor),
+                    'D': proc.halstead_difficulty(tu.cursor),
+                    'L': proc.halstead_level(tu.cursor),
+                    'E': proc.halstead_effort(tu.cursor),
+                    'B': proc.halstead_bugs(tu.cursor),
+                    'TC': proc.token_count(tu.cursor)
+                }
+            except Exception as e:
+                print("C/C++ Analysis Failed")
+                exec_type, exec_obj, exec_tb = sys.exc_info()
+                fname = os.path.split(exec_tb.tb_frame.f_code.co_filename)[1]
+                print(exec_type, fname, exec_tb.tb_lineno)
             file_list[file] = attribute_list
 
     for item in file_list:
