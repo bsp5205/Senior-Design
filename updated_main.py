@@ -9,6 +9,7 @@ import procedural_c as proc
 import clang.cindex as ci
 import sys
 import evaluate_metrics as em
+import LocalServer
 
 file_list = {}
 
@@ -20,7 +21,7 @@ def find_file_metric(filename, metric):
 
 # Assess every file in given directory
 def assess_every_file(directory):
-
+    attribute_list = {}
     for file in os.listdir(directory):
         path = directory + "/" + file
         concat_line, comment_count = util.read_file(path, 0)
@@ -32,7 +33,7 @@ def assess_every_file(directory):
 
                 print(file + str(m.calculate_comment_percentage(tree, comment_count)))
 
-                attribute_list = {
+                attribute_list[file] = {
                     # Mood Metrics
 
                     'AHF': em.mood_AHF(mood.calculate_attribute_hiding_factor(tree), 50),
@@ -64,7 +65,7 @@ def assess_every_file(directory):
                 tu = index.parse(file)
                 filename = tu.spelling
 
-                attribute_list = {
+                attribute_list[file] = {
                     'ELOC': proc.effective_lines_of_code(filename),
                     'KLOC': proc.kilo_lines_of_code(filename),
                     'ABC': proc.assignments_branches_conditionals(tu.cursor),
@@ -90,9 +91,12 @@ def assess_every_file(directory):
             print(metric, end=" ")
             print(file_list[item][metric], end="\n")
         print(end="\n")
-
+    return attribute_list
 
 def main():
+    # Launch the application generates the airium original html
+    LocalServer.run_app()
+
     assess_every_file('TestAssignmentFiles')
 
     # Example of find_all_file_metrics

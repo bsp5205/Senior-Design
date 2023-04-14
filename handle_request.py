@@ -4,6 +4,7 @@ import canvasapi
 import requests
 import zipfile
 import io
+import updated_main as um
 
 
 # gets the canvas api from an ip address
@@ -33,19 +34,11 @@ def launch_page(domain, course_id):
         #print(assign.attributes)
         # if 'submission_types' contains 'online_upload'?
 
-    assign_id = assignments[0].attributes['id']
-    subs = launch_assignment(course, assign_id)
-    attachments = subs[0].attributes['attachments']
-
-    files = get_submission_file(attachments)
-    print(files)
-    remove_submission_files(files)
-    # calls on assignment select -> launch_assignment(course, assignment_id)
-    return assignments
+    return assignments, course, canvas_api
 
 
 # takes an assignment id to launch the quality assessor
-# returns a list of dictionaries
+# returns a list of canvasapi submission objects
 def launch_assignment(course, assign_id):
     assignment = course.get_assignment(assign_id)
     submissions = assignment.get_submissions()
@@ -53,12 +46,12 @@ def launch_assignment(course, assign_id):
     for sub in submissions:
         print(sub.attributes)
 
-    # open the page here with
+    # open the page here with the first student
+
     return submissions
 
-
-# get attach the files to use
-# takes a list of attachments from a submission
+# takes a list of canvasapi attachment objects from a submission
+# returns a list of strings denoting the names of the files for an assignment submission
 def get_submission_file(attachments):
 
     for file in attachments:
@@ -79,9 +72,23 @@ def get_submission_file(attachments):
     files = os.listdir('TestAssignmentFiles')
     return files
 
+# this method will leverage other methods to generate the metrics dict
+def analyze_submissions(subs):
+    report_metrics = {}
+    for sub in subs:
+        if sub.attributes['submission_type'] == 'online_upload':
+            attachs = sub.attributes['attachments']
+            files = get_submission_file(attachs)
+
+            report_metrics[sub.attributes['user_id']] = um.assess_every_file('TestAssignmentFiles')
+            remove_submission_files(files)
+        else:
+            report_metrics[sub.attributes['user_id']] = 0
+
+    return report_metrics
 
 # remove the submission files from the temporary directory after use
 def remove_submission_files(files):
     for file in files:
         os.remove('TestAssignmentFiles/' + file)
-
+    return 1
