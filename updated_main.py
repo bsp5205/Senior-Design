@@ -10,18 +10,19 @@ import clang.cindex as ci
 import sys
 import evaluate_metrics as em
 import LocalServer
+import procedural_java as pj
 
-file_list = {}
+attribute_list = {}
 
 def find_all_file_metrics(filename):
-    return file_list[filename]
+    return attribute_list[filename]
 
 def find_file_metric(filename, metric):
-    return file_list[filename][metric]
+    return attribute_list[filename][metric]
 
 # Assess every file in given directory
 def assess_every_file(directory):
-    attribute_list = {}
+    # attribute_list = {}
     for file in os.listdir(directory):
         path = directory + "/" + file
         concat_line, comment_count = util.read_file(path, 0)
@@ -31,11 +32,9 @@ def assess_every_file(directory):
             try:
                 tree = javalang.parse.parse(concat_line)
 
-                print(file + str(m.calculate_comment_percentage(tree, comment_count)))
-
+                # print(file + str(m.calculate_comment_percentage(tree, comment_count)))
                 attribute_list[file] = {
                     # Mood Metrics
-
                     'AHF': em.mood_AHF(mood.calculate_attribute_hiding_factor(tree), 50),
                     'MHF': em.mood_MHF(mood.calculate_method_hiding_factor(tree), 50),
                     'MIF': em.mood_MIF(mood.calculate_method_inheritance_factor(tree), 50),
@@ -48,16 +47,21 @@ def assess_every_file(directory):
                     'SLOC': m.calculate_SLOC(tree),
                     'CP': em.comment_percentage(m.calculate_comment_percentage(tree, comment_count), 50),
                     'WMC': m.calculate_weighted_method_per_class(tree),
-                    'DIT': em.cbo_dit(m.calculate_depth_of_inheritance(tree), 50)
+                    'DIT': em.cbo_dit(m.calculate_depth_of_inheritance(tree), 50),
+                    'TC': pj.calculate_token_count(tree),
+                    'ABC': pj.calculate_ABC(tree)
+
                     # attribute_list['CBO'] = main.calculate_coupling_between_objects(tree)
                 }
             except Exception as e:
                 print("Java Analysis Failed")
+                print(e)
                 exec_type, exec_obj, exec_tb = sys.exc_info()
                 fname = os.path.split(exec_tb.tb_frame.f_code.co_filename)[1]
                 print(exec_type, fname, exec_tb.tb_lineno)
+                print(path)
 
-            file_list[file] = attribute_list
+            # file_list[file] = attribute_list
         elif file.endswith(".cpp") or file.endswith(".c"):
             try:
                 # Clang setup
@@ -83,13 +87,14 @@ def assess_every_file(directory):
                 exec_type, exec_obj, exec_tb = sys.exc_info()
                 fname = os.path.split(exec_tb.tb_frame.f_code.co_filename)[1]
                 print(exec_type, fname, exec_tb.tb_lineno)
-            file_list[file] = attribute_list
+            # file_list[file] = attribute_list
 
-    for item in file_list:
+    for item in attribute_list:
         print(item)
-        for metric in file_list[item]:
+        for metric in attribute_list[item]:
             print(metric, end=" ")
-            print(file_list[item][metric], end="\n")
+            print(attribute_list[item][metric], end="\n")
+            pass
         print(end="\n")
     return attribute_list
 
@@ -97,13 +102,14 @@ def main():
     # Launch the application generates the airium original html
     LocalServer.run_app()
 
+    # m.main('TestAssignmentFiles/simple.java')
     assess_every_file('TestAssignmentFiles')
 
     # Example of find_all_file_metrics
-    print(find_all_file_metrics('DNA.java'))
+    # print(find_all_file_metrics('DNA.java'))
 
     # Example of find_file_metric
-    print(find_file_metric('DNA.java', 'MIF'))
+    # print(find_file_metric('DNA.java', 'MIF'))
 
 if __name__ == '__main__':
     main()

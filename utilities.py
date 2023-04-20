@@ -62,9 +62,19 @@ def search(tree, param, field):
 def custom_filter(tree, param):
     return_list = []
     for x, v in tree.types[0]:
-        # print(v)
         if type(v).__name__ == param:
             return_list.append(v)
+    return return_list
+
+"""
+:param tree - the tree
+:param param - the subclass that is being filtered for EX:"javalang.tree.MethodDeclaration"
+"""
+def custom_filter_javalang_tree(tree, param):
+    return_list = []
+    param_filter = eval(param)
+    for path, node in tree.filter(param_filter):
+        return_list.append(node)
     return return_list
 
 """

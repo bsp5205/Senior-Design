@@ -1,5 +1,5 @@
 import subprocess
-import canvas_api.main as ca
+# import canvas_api.main as ca
 import flask
 import handle_request as hr
 from flask import Flask, request, jsonify, render_template_string, render_template

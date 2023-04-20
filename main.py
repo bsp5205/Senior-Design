@@ -11,9 +11,10 @@ def calculate_McGabe_cyclomatic_complexity(tree):
     # https://www.theserverside.com/feature/How-to-calculate-McCabe-cyclomatic-complexity-in-Java
     cc = 1
     cc_list = []
-
     # Get relevant lists
-    method_list = util.custom_filter(tree, 'MethodDeclaration')
+    # method_list = util.custom_filter(tree, 'MethodDeclaration')
+
+    method_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.MethodDeclaration')
 
     for method_num in range(len(method_list)):
 
@@ -30,45 +31,24 @@ def calculate_McGabe_cyclomatic_complexity(tree):
 def calculate_SLOC(tree):
     sloc = 0
 
-    # ClassDeclaration +2
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
-    for class_num in range(len(class_list)):
-        sloc += 2
+    # All one line of code hence + 1 ('}' not included)
+    # Handling imports
+    if type(tree.imports) != int:
+        sloc += len(tree.imports)
 
-    # MethodDeclaration +2
-    method_list = util.custom_filter(tree, 'MethodDeclaration')
-    for method_num in range(len(method_list)):
-        sloc += 2
+    # Filter out FormalParameters
+    sloc += len(list(filter(lambda i: not (type(i) is javalang.tree.FormalParameter),
+                    util.custom_filter_javalang_tree(tree, 'javalang.tree.Declaration'))))
+    method_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.MethodDeclaration')
+    for method in method_list:
+        for annotation in method.annotations:
+            if annotation.name == 'Override':
+                sloc += 1
 
-    # StatementExpression
-    statement_list = util.custom_filter(tree, 'StatementExpression')
-    for statement_num in range(len(statement_list)):
-        sloc += 1
-
-    # LocalVariableDeclaration + 1
-    local_var_declaration_list = util.custom_filter(tree, 'LocalVariableDeclaration')
-    for local_var_num in range(len(local_var_declaration_list)):
-        sloc += 1
-
-    # IfStatement +2, ElseStatement +=1
-    if_statement_list = util.custom_filter(tree, 'MethodDeclaration')
-    for if_statement_num in range(len(if_statement_list)):
-        if hasattr(if_statement_list[if_statement_num], 'else_statement') and type(if_statement_list[if_statement_num].else_statement).__name__ == 'IfStatement':
-            sloc += 2
-        elif hasattr(method_list[if_statement_num], 'then_statement') and type(if_statement_list[if_statement_num].else_statement).__name__ == 'BlockStatement':
-            sloc += 1
-        else:
-            sloc += 2
-
-    # ForStatement + 2
-    for_statement_list = util.custom_filter(tree, 'ForStatement')
-    for for_num in range(len(for_statement_list)):
-        sloc += 2
-
-    # WhileStatement +2
-    while_statement_list = util.custom_filter(tree, 'WhileStatement')
-    for while_num in range(len(while_statement_list)):
-        sloc += 2
+    sloc += len(util.custom_filter_javalang_tree(tree, 'javalang.tree.Assignment'))
+    sloc += len(util.custom_filter_javalang_tree(tree, 'javalang.tree.Invocation'))
+    sloc += len(util.custom_filter_javalang_tree(tree, 'javalang.tree.BlockStatement'))
+    sloc -= len(util.custom_filter_javalang_tree(tree, 'javalang.tree.ForStatement'))
 
     return sloc
 
@@ -104,14 +84,17 @@ def recursive_check(tree, subtree, height):
         extend_list = subtree.extends
         # tree of parent class
         class_name = next(iter(extend_list))[1].name
-        return height+1
+
+        for parent in util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration'):
+            if class_name == parent.name:
+                return recursive_check(tree, parent, height + 1)
 
 
     return height
 
 def calculate_depth_of_inheritance(tree):
     dit = 0
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    class_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
     for class_num in range(len(class_list)):
         class_being_checked = class_list[class_num]
         dit_new = recursive_check(tree, class_being_checked, 0)
@@ -157,12 +140,13 @@ def calculate_coupling_between_objects(tree, cbo_tuples):
 def coupled_methods(class_name, couple):
     methods = 0
 
-    path = class_name + '.java'
+    path = 'TestAssignmentFiles/' + class_name + '.java'
+
     # if finding the file does not work
     try:
         concat_line, comment_count = util.read_file(path, 0)
         tree = javalang.parse.parse(concat_line)
-        invoc_method_list = util.custom_filter(tree, 'MethodInvocation')
+        invoc_method_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.MethodInvocation')
         for invoc_method_num in range(len(invoc_method_list)):
             cur_method = invoc_method_list[invoc_method_num]
             if (cur_method.qualifier == couple):
@@ -171,13 +155,13 @@ def coupled_methods(class_name, couple):
         return methods
 
 
-def main():
+def main(path):
     # set the path
     # path = 'DNA3.java'
     # path = 'DNA.java'
     # path = 'DNA1.java'
     # path = 'DNA2.java'
-    path = 'cyclomatic.java'
+    # path = 'cyclomatic.java'
 
     # submission holds user_id gets user from it
     # this

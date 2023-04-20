@@ -46,7 +46,7 @@ def calculate_ABC(tree):
             binary_count += 1
 
     # Finds else statement count for C
-    statement_list = util.custom_filter(tree, 'IfStatement')
+    statement_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.IfStatement')
     else_count = 0
     for statement in statement_list:
         if statement.attrs[3]:
@@ -54,9 +54,9 @@ def calculate_ABC(tree):
                 else_count += 1
 
     # Find ABC amounts for metric
-    a = len(util.custom_filter(tree, 'VariableDeclarator') + util.custom_filter(tree, 'Assignment')) + fix_count
-    b = len(util.custom_filter(tree, 'MethodInvocation') + util.custom_filter(tree, 'ClassCreator'))
-    c = len(util.custom_filter(tree, 'TryStatement') + util.custom_filter(tree, 'CatchClause') + util.custom_filter(tree, 'SwitchStatement')) + unary_count + binary_count + else_count
+    a = len(util.custom_filter_javalang_tree(tree, 'javalang.tree.VariableDeclarator') + util.custom_filter_javalang_tree(tree, 'javalang.tree.Assignment')) + fix_count
+    b = len(util.custom_filter_javalang_tree(tree, 'javalang.tree.MethodInvocation') + util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassCreator'))
+    c = len(util.custom_filter_javalang_tree(tree, 'javalang.tree.TryStatement') + util.custom_filter_javalang_tree(tree, 'javalang.tree.CatchClause') + util.custom_filter_javalang_tree(tree, 'javalang.tree.SwitchStatement')) + unary_count + binary_count + else_count
     abc = math.sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2))
 
     # Assess quality
@@ -71,7 +71,7 @@ def calculate_ABC(tree):
     else:
         quality = "Unacceptable"
 
-    return '{0:.3g} '.format(abc) + '{' + 'A: {}, B: {}, C: {}'.format(a, b, c) + '} ' + quality
+    return round(abc, 2)
 
 # Halstead metrics
 
@@ -90,7 +90,7 @@ def calculate_Halstead_ops(tree):
     add_operator(tree, javalang.tree.MethodDeclaration, 'return_type')
     add_operator(tree, javalang.tree.BasicType, 'name')
 
-    statement_list = util.custom_filter(tree, 'ClassDeclaration')
+    statement_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
     for statement in statement_list:
         if operators.get('class'):
             operators['class'] += 1
@@ -117,7 +117,8 @@ def calculate_Halstead_ops(tree):
     # print(operands)
     # print('N1: {} N2: {} n1: {} n2: {}'.format(N1, N2, n1, n2))
 
-    return
+    return n1, n2
+
 
 def add_operand(tree, param, attribute):
     operand_list = tree.filter(param)
@@ -189,10 +190,9 @@ def calculate_Halstead_program_length():
     return N
 
 # Calculate Halstead program vocabulary (n)
-def calculate_Halstead_program_vocabulary():
-    global n
-    n = n1 + n2
-    return n
+def calculate_Halstead_program_vocabulary(tree):
+    num1, num2 = calculate_Halstead_ops(tree)
+    return n1 + n2
 
 # Calculate Halstead program volume (V)
 def calculate_Halstead_program_volume():
@@ -225,8 +225,8 @@ def calculate_Halstead_number_of_bugs():
     return B
 
 # Calculate token count (TC)
-def calculate_token_count():
-    return n
+def calculate_token_count(tree):
+    return calculate_Halstead_program_vocabulary(tree)
 
 # Calculate cyclomatic complexity (MCC)
 def calculate_MMCC(tree):

@@ -51,7 +51,6 @@ def wmc(cc_evaluates):
 def cbo_dit(result, weight):
     if weight == 0:
         return 100
-
     # we want cbo to be as low as possible change the complexity based off weight
     # this is because the coupling in student assignments should not be too complexed
     # cbo and dit have almost identical desired values (2-4)

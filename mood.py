@@ -13,20 +13,21 @@ def recursive_parent_methods(tree):
     # tree of parent class
     class_name = next(iter(extend_list))[1].name
 
-    path = class_name + '.java'
+    path = 'TestAssignmentFiles/' + class_name + '.java'
 
     try:
         concat_line, comment_count = util.read_file(path, 0)
         parent_tree = javalang.parse.parse(concat_line)
         # check if parent extends
-        class_list = util.custom_filter(parent_tree, 'ClassDeclaration')
+        class_list = util.custom_filter_javalang_tree(parent_tree, 'javalang.tree.ClassDeclaration')
         for class_num in range(len(class_list)):
             cur_class = class_list[class_num]
+
             if cur_class.extends is not None:
-                add_methods = recursive_parent_methods(cur_class)
+                add_methods += recursive_parent_methods(cur_class)
 
         # add these methods to parent methods if not private
-        parent_method_list = util.custom_filter(parent_tree, 'MethodDeclaration')
+        parent_method_list = util.custom_filter_javalang_tree(parent_tree, 'javalang.tree.MethodDeclaration')
         for method_num in range(len(parent_method_list)):
             cur_method = parent_method_list[method_num]
             if next(iter(cur_method.modifiers)) != 'private':
@@ -42,7 +43,7 @@ def calculate_method_hiding_factor(tree):
     MHF = 0
     hidden_meth = 0
     total_meth = 0
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    class_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
     for class_num in range(len(class_list)):
         class_body = class_list[class_num].body
         for instance in class_body:
@@ -51,10 +52,9 @@ def calculate_method_hiding_factor(tree):
 
                 # methods without access modifiers in java are public
                 if len(instance.modifiers) > 0:
-                    meth_vis = next(iter(instance.modifiers))
-                    if (meth_vis == 'private'):
-                        hidden_meth = hidden_meth + 1
-
+                    for meth_vis in iter(instance.modifiers):
+                        if (meth_vis == 'private'):
+                            hidden_meth = hidden_meth + 1
     MHF = hidden_meth/total_meth
     return MHF
 
@@ -66,7 +66,7 @@ def calculate_attribute_hiding_factor(tree):
     AHF = 0
     hidden_attr = 0
     total_attr = 0
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    class_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
     for class_num in range(len(class_list)):
         class_body = class_list[class_num].body
         for instance in class_body:
@@ -76,11 +76,11 @@ def calculate_attribute_hiding_factor(tree):
                 # methods without access modifiers in java are public?
                 if len(instance.modifiers) > 0:
                     attr_vis = next(iter(instance.modifiers))
-                    if (attr_vis == 'private'):
+                    if (attr_vis == 'private' or attr_vis == 'protected'):
                         hidden_attr = hidden_attr + 1
 
     # local variables are not attributes
-    if total_attr is 0:
+    if total_attr == 0:
         AHF = 0.0
     else:
         AHF = hidden_attr/total_attr
@@ -96,7 +96,7 @@ def calculate_method_inheritance_factor(tree):
     def_meth = 0
     tot_meth = 0
     inherit_meth = []
-    def_method_list = util.custom_filter(tree, 'MethodDeclaration')
+    def_method_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.MethodDeclaration')
     for method_num in range(len(def_method_list)):
         def_meth = def_meth + 1
         if len(def_method_list[method_num].annotations) > 0:
@@ -124,11 +124,11 @@ def calculate_attribute_inheritance_factor(tree):
     def_attr = 0
     tot_attr = 0
     inherit_attr = []
-    def_attr_list = util.custom_filter(tree, 'FieldDeclaration')
+    def_attr_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.FieldDeclaration')
     for attr_num in range(len(def_attr_list)):
         def_attr = def_attr + 1
 
-    invoc_attr_list = util.custom_filter(tree, 'MemberReference')
+    invoc_attr_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.MemberReference')
     for invoc_attr_num in range(len(invoc_attr_list)):
         cur_attr = invoc_attr_list[invoc_attr_num]
         if (cur_attr.qualifier != '' and cur_attr.qualifier != None):
@@ -137,7 +137,7 @@ def calculate_attribute_inheritance_factor(tree):
                 inherit_attr.append(cur_attr_string)
     tot_attr = len(inherit_attr) + def_attr
 
-    if tot_attr is 0:
+    if tot_attr == 0:
         AIF = 0.0
     else:
         AIF = len(inherit_attr) / tot_attr
@@ -153,7 +153,7 @@ def calculate_coupling_factor(tree):
     coupled_class = []
     parent = ''
 
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    class_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
     for class_num in range(len(class_list)):
         cur_class = class_list[class_num]
         if cur_class.implements is not None:
@@ -165,7 +165,7 @@ def calculate_coupling_factor(tree):
             extend_list = cur_class.extends
             parent = next(iter(extend_list))[1].name
 
-        invoc_method_list = util.custom_filter(tree, 'MethodInvocation')
+        invoc_method_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.MethodInvocation')
         for invoc_method_num in range(len(invoc_method_list)):
             cur_method = invoc_method_list[invoc_method_num]
             if (cur_method.qualifier != '' and cur_method.qualifier != parent and cur_method.qualifier != None):
@@ -176,8 +176,7 @@ def calculate_coupling_factor(tree):
                     couple_meth.append(cur_method_string)
 
         for qualifier in coupled_class:
-            max_couples = home_file.coupled_methods(qualifier, cur_class.name)
-
+            max_couples = home_file.coupled_methods(cur_class.name, qualifier)
     couples = len(couple_meth)
     if max_couples != 0:
         CF = couples/max_couples
@@ -188,7 +187,7 @@ def calculate_polymorphism_factor(tree):
     POF = 0.0
     num_overrides = 0
     possible_overrides = 0
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    class_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
     for class_num in range(len(class_list)):
         cur_class = class_list[class_num]
 
@@ -196,13 +195,13 @@ def calculate_polymorphism_factor(tree):
             # if program compiles and class implements POF needs to be 1
             POF = 1.0
 
-        elif cur_class.extends is not None:
+        if cur_class.extends is not None:
             possible_overrides = recursive_parent_methods(cur_class)
 
         # if possible overrides are 0 POF is 0
         if possible_overrides != 0:
             # getting the overridden methods
-            meth_list = util.custom_filter(tree, 'MethodDeclaration')
+            meth_list = util.custom_filter_javalang_tree(class_list[class_num], 'javalang.tree.MethodDeclaration')
             for meth_num in range(len(meth_list)):
                 cur_meth = meth_list[meth_num]
                 if len(cur_meth.annotations) > 0:
