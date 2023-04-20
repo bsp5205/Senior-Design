@@ -12,17 +12,10 @@ import evaluate_metrics as em
 import LocalServer
 import procedural_java as pj
 
-attribute_list = {}
-
-def find_all_file_metrics(filename):
-    return attribute_list[filename]
-
-def find_file_metric(filename, metric):
-    return attribute_list[filename][metric]
 
 # Assess every file in given directory
 def assess_every_file(directory):
-    # attribute_list = {}
+    attribute_list = {}
     for file in os.listdir(directory):
         path = directory + "/" + file
         concat_line, comment_count = util.read_file(path, 0)
@@ -32,12 +25,6 @@ def assess_every_file(directory):
             try:
                 tree = javalang.parse.parse(concat_line)
 
-                cbo_tuples = []
-                for file in files:
-                    # list of dicts to hold the metric values
-                    file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
-                    # list of tuple to hold the coupled files
-                    cbo_tuples.append((file, []))
 
                 # print(file + str(m.calculate_comment_percentage(tree, comment_count)))
                 attribute_list[file] = {
@@ -51,13 +38,13 @@ def assess_every_file(directory):
 
                     # OO Metrics
                     'CC': em.mcgabe_cc(m.calculate_weighted_method_per_class(tree), 100, m.calculate_SLOC(tree)),
-                    'SLOC': m.calculate_SLOC(tree),
+                    # 'SLOC': m.calculate_SLOC(tree, file),
                     'CP': em.comment_percentage(m.calculate_comment_percentage(tree, comment_count), 50),
                     'WMC': m.calculate_weighted_method_per_class(tree),
                     'DIT': em.cbo_dit(m.calculate_depth_of_inheritance(tree), 50),
                     'TC': pj.calculate_token_count(tree),
                     'ABC': pj.calculate_ABC(tree),
-                    'CBO': main.calculate_coupling_between_objects(tree, cbo_tuples)
+                    #'CBO': main.calculate_coupling_between_objects(tree, cbo_tuples)
 
                     # attribute_list['CBO'] = main.calculate_coupling_between_objects(tree)
                 }
@@ -104,6 +91,7 @@ def assess_every_file(directory):
             print(attribute_list[item][metric], end="\n")
             pass
         print(end="\n")
+    print(attribute_list)
     return attribute_list
 
 def main():

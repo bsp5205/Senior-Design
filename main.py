@@ -113,7 +113,7 @@ def calculate_coupling_between_objects(tree, cbo_tuples):
     method_dict = {}
     attribute_dict = {}
     # get a list of the classes
-    class_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
+    class_list = util.custom_filter(tree, 'ClassDeclaration')
     # check each class
     for class_num in range(len(class_list)):
         class_body = class_list[class_num].body
@@ -170,13 +170,13 @@ def main(path):
     # user = hr.get_api(canvas_ip)
 
     # setup each list containing file information
-    file_metrics_dicts = []
-    cbo_tuples = []
-    for file in files:
-        # list of dicts to hold the metric values
-        file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
-        # list of tuple to hold the coupled files
-        cbo_tuples.append((file, []))
+    # file_metrics_dicts = []
+    # cbo_tuples = []
+    # for file in files:
+    #     # list of dicts to hold the metric values
+    #     file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
+    #     # list of tuple to hold the coupled files
+    #     cbo_tuples.append((file, []))
 
     # get the concat file
     concat_line, comment_count = util.read_file(path, 0)
