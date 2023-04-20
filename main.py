@@ -170,13 +170,13 @@ def main(path):
     # user = hr.get_api(canvas_ip)
 
     # setup each list containing file information
-    # file_metrics_dicts = []
-    # cbo_tuples = []
-    # for file in files:
-    #     # list of dicts to hold the metric values
-    #     file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
-    #     # list of tuple to hold the coupled files
-    #     cbo_tuples.append((file, []))
+    file_metrics_dicts = []
+    cbo_tuples = []
+    for file in files:
+        # list of dicts to hold the metric values
+        file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
+        # list of tuple to hold the coupled files
+        cbo_tuples.append((file, []))
 
     # get the concat file
     concat_line, comment_count = util.read_file(path, 0)

@@ -180,7 +180,7 @@ def print_all():
 
 # Main function
 def main():
-    ci.Config.set_library_file("C:/Users/Alex/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/site-packages/clang/native/libclang.dll");
+    # ci.Config.set_library_file("C:/Users/Alex/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/site-packages/clang/native/libclang.dll");
     print_all()
     
 # Make sure doesn't run on import

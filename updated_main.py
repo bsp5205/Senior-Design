@@ -32,6 +32,13 @@ def assess_every_file(directory):
             try:
                 tree = javalang.parse.parse(concat_line)
 
+                cbo_tuples = []
+                for file in files:
+                    # list of dicts to hold the metric values
+                    file_metrics_dicts.append(dict(file=file, SLOC=0, ALLOTHERMETRICS=0.0))
+                    # list of tuple to hold the coupled files
+                    cbo_tuples.append((file, []))
+
                 # print(file + str(m.calculate_comment_percentage(tree, comment_count)))
                 attribute_list[file] = {
                     # Mood Metrics
@@ -49,7 +56,8 @@ def assess_every_file(directory):
                     'WMC': m.calculate_weighted_method_per_class(tree),
                     'DIT': em.cbo_dit(m.calculate_depth_of_inheritance(tree), 50),
                     'TC': pj.calculate_token_count(tree),
-                    'ABC': pj.calculate_ABC(tree)
+                    'ABC': pj.calculate_ABC(tree),
+                    'CBO': main.calculate_coupling_between_objects(tree, cbo_tuples)
 
                     # attribute_list['CBO'] = main.calculate_coupling_between_objects(tree)
                 }
