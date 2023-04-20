@@ -54,6 +54,7 @@ def launch_assignment(course, assign_id):
 # returns a list of strings denoting the names of the files for an assignment submission
 def get_submission_file(attachments):
 
+    files = []
     for file in attachments:
         # gets the request from url
         req = requests.get(file['url'])
@@ -68,8 +69,9 @@ def get_submission_file(attachments):
         else:
             print("There was an error in the submission download request")
 
-    # Return the list of unzipped files
-    files = os.listdir('TestAssignmentFiles')
+        files.append((file['display_name'], file['url']))
+
+    # Return the tuple list files
     return files
 
 # this method will leverage other methods to generate the metrics dict
@@ -80,15 +82,13 @@ def analyze_submissions(subs):
             attachs = sub.attributes['attachments']
             files = get_submission_file(attachs)
 
-            report_metrics[sub.attributes['user_id']] = um.assess_every_file('TestAssignmentFiles')
-            remove_submission_files(files)
-        else:
-            report_metrics[sub.attributes['user_id']] = 0
+            report_metrics = um.assess_every_file('TestAssignmentFiles')
+            # remove_submission_files(files)
 
     return report_metrics
 
 # remove the submission files from the temporary directory after use
 def remove_submission_files(files):
     for file in files:
-        os.remove('TestAssignmentFiles/' + file)
+        os.remove('TestAssignmentFiles/' + file[0])
     return 1
