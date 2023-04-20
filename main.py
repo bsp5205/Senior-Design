@@ -113,7 +113,7 @@ def calculate_coupling_between_objects(tree, cbo_tuples):
     method_dict = {}
     attribute_dict = {}
     # get a list of the classes
-    class_list = util.custom_filter(tree, 'ClassDeclaration')
+    class_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.ClassDeclaration')
     # check each class
     for class_num in range(len(class_list)):
         class_body = class_list[class_num].body
