@@ -79,6 +79,8 @@ general_names = ['Comment Percentage (CP)', 'Token Count (TC)']
 cma_observation = ['one', 'two', 'three']
 qma_observation = ['one', 'two', 'three']
 
+student_list = []
+
 assignment_link = ''
 
 def create_student(name, student_id, submission):
@@ -95,24 +97,24 @@ def create_file(code, name, id, scores, link):
 
 scores_1 = [complexity_metric_scores, cohesion_metric_scores, coupling_metric_scores, naming_metric_scores, general_metric_scores]
 scores_2 = []
-code = 'import java.io.File;\n' + 'import java.io.FileNotFoundException;\n' + 'import java.util.Scanner;\n' + '\n' +'//\n' +'// DNAApp.java\n' +'//\n' +'// class to read in a file from the user and output the\n' +'//\n' +'// @author Kenneth Burt\n' +'//\n' +'public class DNAApp extends DNA1 {\n' +'\n' + '    public String Header;\n' +'    public String DNA = "";\n' +'    private String input;\n' +'\n' +'    public static void main(String[] args) throws FileNotFoundException {\n' +'\n' +'        Scanner keyBoard = new Scanner(System.in);\n' +'\n' +'        System.out.println("What is the name of the file?");\n' +'        input = keyBoard.nextLine();\n' +'\n' +'        File DNAFile = new File(input);\n' +'        Scanner DNAScan = new Scanner(DNAFile);\n' +'\n' +'        Header = DNAScan.nextLine();\n' +'\n' +'        int iterator = 2;\n' +'        while(DNAScan.hasNextLine()) {\n' +'            DNA = DNA + DNAScan.nextLine();\n' +'            iterator++;\n' +'        }\n' +'\n' +'        DNA ProteinCodes = new DNA(Header, DNA);\n' +'\n' +'        System.out.println(Header + "\\n" + ProteinCodes.getPCRs().toString());\n' +'    }\n' +'}\n'
+#code = 'import java.io.File;\n' + 'import java.io.FileNotFoundException;\n' + 'import java.util.Scanner;\n' + '\n' +'//\n' +'// DNAApp.java\n' +'//\n' +'// class to read in a file from the user and output the\n' +'//\n' +'// @author Kenneth Burt\n' +'//\n' +'public class DNAApp extends DNA1 {\n' +'\n' + '    public String Header;\n' +'    public String DNA = "";\n' +'    private String input;\n' +'\n' +'    public static void main(String[] args) throws FileNotFoundException {\n' +'\n' +'        Scanner keyBoard = new Scanner(System.in);\n' +'\n' +'        System.out.println("What is the name of the file?");\n' +'        input = keyBoard.nextLine();\n' +'\n' +'        File DNAFile = new File(input);\n' +'        Scanner DNAScan = new Scanner(DNAFile);\n' +'\n' +'        Header = DNAScan.nextLine();\n' +'\n' +'        int iterator = 2;\n' +'        while(DNAScan.hasNextLine()) {\n' +'            DNA = DNA + DNAScan.nextLine();\n' +'            iterator++;\n' +'        }\n' +'\n' +'        DNA ProteinCodes = new DNA(Header, DNA);\n' +'\n' +'        System.out.println(Header + "\\n" + ProteinCodes.getPCRs().toString());\n' +'    }\n' +'}\n'
 language = "java"
-file_1 = create_file(code, 'file1', 123, scores_1, 'test1')
+#file_1 = create_file(code, 'file1', 123, scores_1, 'test1')
 file_2 = create_file('test2', 'file2', 456, scores_1, 'test2')
-submission_1 = create_submission('December 30, 2022 at 9:37PM', [file_1, file_2])
-student_1 = create_student('Student 1', '123', submission_1)
+#submission_1 = create_submission('December 30, 2022 at 9:37PM', [file_1, file_2])
+#student_1 = create_student('Student 1', '123', submission_1)
 
 file_3 = create_file('test3', 'file3', 789, scores_1, 'test3')
 file_4 = create_file('test4', 'file4', 101112, scores_1, 'test4')
 submission_2 = create_submission('December 30, 2022 at 9:37PM', [file_3, file_4])
 student_2 = create_student('Student 2', '123', submission_2)
 
-student_list = [student_1, student_2]
+#student_list = [student_1, student_2]
 
-selected_student = student_list[0]
-focus_file = selected_student.submission.file_list[0]
-prev_student = student_1
-next_student = student_2
+#selected_student = student_list[0]
+#focus_file = selected_student.submission.file_list[0]
+#prev_student = student_1
+#next_student = student_2
 
 t = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
 threshold_list = t
@@ -141,7 +143,20 @@ calc_scores_w_thresholds([0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 calc_scores_w_thresholds([50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50])
 
 
-def go_here():
+def go_here(guy, fill):
+    print(student_list)
+    selected_student = student_list[guy]
+    focus_file = selected_student.submission.file_list[fill]
+
+    prev_student = student_list[guy]
+    next_student = student_list[guy]
+
+    num = len(student_list)
+    if guy + 1 < num:
+        prev_student = student_list[guy+1]
+    if guy != 0:
+        next_student = student_list[guy-1]
+
     a = Airium()
 
     with a.head():
@@ -172,15 +187,15 @@ def go_here():
             with a.div(klass='subheadContent subheadContent--flex-start'):
                 with a.div(klass='assignmentDetails'):
                     with a.a(klass='a-style', href=assignment_link, id='assignment_url'):
-                        a.h2(klass='assignmentDetails__Title', _t='Assignment Name')
+                        a.h2(klass='assignmentDetails__Title', _t='Test Comp Sci Java Assignment')
                     with a.p(klass='assignmentDetails__Info'):
-                        a.span(_t='Due: Month Day, Year at Time')
+                        a.span(_t='Due: 1/1, 2022 at 11:59')
                         a('-')
                         a.a(klass='a-style', href='/courses/2173881', id='context_title',
-                            _t='Course Name, Section #: Title')
+                            _t='CMPSC 404')
             with a.div(klass='subheadContent subheadContent--flex-end'):
                 with a.div(klass='studentSelection'):
-                    with a.form(action='http://localhost:3000/next_student', id='next_student_form', method='post'):
+                    with a.form(action='http://127.0.0.1:5000/next_student', id='next_student_form', method='post'):
                         with a.label():
                             a.input(klass='secret3', name='next_student', value='123')
                         for i in range(
@@ -202,11 +217,11 @@ def go_here():
                                 a.path(
                                     d='M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z',
                                     **{'fill-rule': 'evenodd'})
-                    with a.form(action='http://localhost:3000/change_student', id='change_student_form', method='post'):
+                    with a.form(action='http://127.0.0.1:5000/change_student', id='change_student_form', method='post'):
                         with a.select(klass='student-selection-class', id='student-list', name='student_list',
                                       onchange='this.form.submit()'):
                             for i in range(len(student_list)):
-                                if i == 0:
+                                if selected_student == student_list[i]:
                                     a.option(klass='other-student', selected='', value=student_list[i].studentID,
                                              _t=student_list[i].name)
                                 else:
@@ -222,7 +237,7 @@ def go_here():
                                     i + len(focus_file.coupling_scores) + len(focus_file.cohesion_scores) + len(
                                         focus_file.complexity_scores)])
 
-                    with a.form(action='http://localhost:3000/next_student', id='prev_student_form', method='post'):
+                    with a.form(action='http://127.0.0.1:5000/next_student', id='prev_student_form', method='post'):
                         with a.label():
                             a.input(klass='secret3', name='next_student', value='456')
                         with a.button(klass='Button Button--icon-action gradebookMoveToNext next',
@@ -483,7 +498,7 @@ def go_here():
                                     for i in range(len(selected_student.submission.file_list)):
                                         with a.div(klass='submission-file'):
                                             with a.div(klass='container'):
-                                                with a.form(action='http://localhost:3000/change_file',
+                                                with a.form(action='http://127.0.0.1:5000/change_file',
                                                             klass='file_form_test', id='file_form', method='post'):
                                                     a.button(klass='submission_button',
                                                              name=str(selected_student.submission.file_list[
@@ -528,7 +543,8 @@ def go_here():
     with a.script():
         a('window.addEventListener("DOMContentLoaded", (event) => {\n        document.getElementById("next_student_form").addEventListener("submit", function(event) {\n            event.preventDefault();\n            submitForm("next_student_form", "/next_student_endpoint");\n        });\n\n        document.getElementById("change_student_form").addEventListener("submit", function(event) {\n            event.preventDefault();\n            submitForm("change_student_form", "/change_student_endpoint");\n        });\n\n        document.getElementById("prev_student_form").addEventListener("submit", function(event) {\n            event.preventDefault();\n            submitForm("prev_student_form", "/prev_student_endpoint");\n        });\n\n    });')
 
-    return a
+    with open('templates/airFile.html', 'wb') as f:
+        f.write(bytes(a))
 
 
 # Takes the generated and saved metrics as parameters to generate the original html
@@ -536,27 +552,53 @@ def go_here():
 # student_info: list of tuples holding student id, name, and submission_id
 # assignment_info: dict holding assignment name, due date, section title
 # report_metrics: Think about it
-def air_file(files, student_info, assignment_info):
+def air_file(files, student_info, assignment_info, report_metrics, file_stu):
     # build a list of students from the student_info
-    all_students = []
+    i = 0
     for student in student_info:
-        all_students.append(create_student(student_info[0], student_info[1], None))
+        file_names = []
+        # attach the files to the first student
+        j = 0
+        for file in file_stu[student[0]]:
+            # read the file
+            path = 'TestAssignmentFiles/' + file[0]
+            cur_file = open(path, "r")
 
-    all_students[0].submission = create_submission("time", files)
+            code = cur_file.read()
 
-    # attach the files to the first student
-    for file in files:
-        # read the file
-        path_string = "TestAssignmentFiles/{0}".format(files[0])
-        cur_file = open(path_string, "r")
+            complexity_metric_scores[0] = report_metrics[file[0]]['CC']
+            complexity_metric_scores[1] = 100
+            complexity_metric_scores[2] = report_metrics[file[0]]['WMC']
+            complexity_metric_scores[3] = report_metrics[file[0]]['ABC']
 
-        code = cur_file.read()
-        create_file(code, file, None)
+            coupling_metric_scores[0] = report_metrics[file[0]]['COF']
+            coupling_metric_scores[1] = 70
 
-    a = go_here()
-    with open('templates/airFile.html', 'wb') as f:
-        f.write(bytes(a))
+            cohesion_metric_scores[0] = report_metrics[file[0]]['DIT']
+            cohesion_metric_scores[1] = report_metrics[file[0]]['MHF']
+            cohesion_metric_scores[2] = report_metrics[file[0]]['AHF']
+
+            naming_metric_scores[0] = 100
+            naming_metric_scores[1] = 100
+            naming_metric_scores[2] = 100
+
+            general_metric_scores[0] = report_metrics[file[0]]['CP']
+            general_metric_scores[1] = report_metrics[file[0]]['TC']
+
+            print([complexity_metric_scores, cohesion_metric_scores, coupling_metric_scores, naming_metric_scores, general_metric_scores])
+            file_names.append(create_file(code, file[0], j, [complexity_metric_scores, cohesion_metric_scores, coupling_metric_scores, naming_metric_scores, general_metric_scores], file[1]))
+            j = j + 1
+
+        print(file_names)
+        sub = create_submission(assignment_info["due_date"], file_names)
+        this_stu = create_student(student[1], i, sub)
+
+        student_list.append(this_stu)
+        i = i+1
+
+    a = go_here(0, 0)
+
+
 
 if __name__ == '__main__':
     print("g")
-    # print('')
