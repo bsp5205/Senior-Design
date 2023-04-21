@@ -3,6 +3,7 @@ import clang
 import procedural_java
 import evaluate_metrics as em
 import mood
+import re
 import handle_request as hr
 
 import utilities as util
@@ -154,6 +155,52 @@ def coupled_methods(class_name, couple):
     finally:
         return methods
 
+
+def evaluate_class_names(tree):
+    class_list = util.search(tree, 'ClassDeclaration', 'name')
+    good_count = 0
+    count = 0
+    for class_ in class_list:
+        if re.search('^[A-Z][a-zA-Z]([A-Z][a-zA-Z])*$',class_):
+            good_count += 1
+        count += 1
+
+    print((good_count/count)*100)
+
+def evaluate_method_names(tree):
+    method_list = util.search(tree, 'MethodDeclaration', 'name')
+    good_count = 0
+    count = 0
+    for method_ in method_list:
+        if re.search('^[a-z][a-zA-Z]([A-Z][a-zA-Z])$',method_):
+            good_count += 1
+        count += 1
+
+    print((good_count/count)*100)
+
+def evaluate_variable_names(tree):
+    variable_list = util.search(tree, 'VariableDeclarator', 'name')
+    good_count = 0
+    count = 0
+    for variable_ in variable_list:
+        if re.search('^[a-z][a-zA-Z]([A-Z][a-zA-Z])$',variable_):
+            good_count += 1
+        count += 1
+
+    print((good_count/count)*100)
+
+
+def evaluate_line_length(file_path, length=80):
+    with open(file_path, 'r') as file:
+        good_count = 0
+        count = 0
+        for line in file:
+            if len(line) < length:
+                good_count += 1
+            count += 1
+
+    print((good_count / count)*100)
+    return ((good_count/count)*100)
 
 def main(path):
     # set the path
