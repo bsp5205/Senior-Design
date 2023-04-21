@@ -565,7 +565,7 @@ def air_file(files, student_info, assignment_info, report_metrics, file_stu):
             file_complex.append(report_metrics[file[0]]['CC'])
             file_complex.append(100)
             file_complex.append(report_metrics[file[0]]['WMC'])
-            file_complex.append(report_metrics[file[0]]['ABC'])
+            file_complex.append(int(round(report_metrics[file[0]]['ABC'], 0)))
             file_scores.append(file_complex)
 
             file_coup_metric =[]
