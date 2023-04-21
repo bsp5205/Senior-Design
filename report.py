@@ -19,6 +19,8 @@ class Submission_File:
         self.code = code
         self.name = name
         self.id = id
+        self.qma_scores = [scores[0], scores[1], scores[2]]
+        self.cma_scores = [scores[4], scores[3]]
         self.complexity_scores = scores[0]
         self.coupling_scores = scores[1]
         self.cohesion_scores = scores[2]
@@ -53,11 +55,11 @@ cohesion_metric_descriptions = ['The number of levels in the class hierarchy.', 
 naming_metric_descriptions = ['Extent to which a program follows class naming.', 'Extent to which a program follows method naming.', 'Extent to which a program follows attribute naming.']
 general_metric_descriptions = ['Ratio of commented lines.', 'Number of keywords, identifiers, literals, and operators.']
 
-complexity_metric_scores = [100, 69, 50, 60]
-coupling_metric_scores = [70, 40]
-cohesion_metric_scores = [50, 40, 40]
-naming_metric_scores = [50, 70, 80]
-general_metric_scores = [100, 60]
+complexity_metric_scores = [0, 9, 0, 0]
+coupling_metric_scores = [0, 0]
+cohesion_metric_scores = [0, 0, 0]
+naming_metric_scores = [0, 0, 0]
+general_metric_scores = [0, 0]
 
 complexity = Metric(complexity_metric_names, complexity_metric_scores, 'complexity', 'Q', complexity_metric_descriptions)
 coupling = Metric(coupling_metric_names, coupling_metric_scores, 'coupling', 'Q', coupling_metric_descriptions)
@@ -449,7 +451,7 @@ def go_here(guy, fill):
                                             _t=qma_metric_score_list[i].metric_description[j])
                                     with a.td(klass='progress-bar-cont'):
                                         a.div(klass='color-circle s' + str(counter + 1), role='progressbar',
-                                              style='--value:' + str(qma_metric_score_list[i].metric_scores[j]),
+                                              style='--value:' + str(focus_file.qma_scores[i][j]),
                                               **{'aria-valuemax': '100', 'aria-valuemin': '0', 'aria-valuenow': '65'})
                                 counter += 1
 
@@ -475,7 +477,7 @@ def go_here(guy, fill):
                                             _t=cma_metric_score_list[i].metric_description[j])
                                     with a.td(klass='progress-bar-cont'):
                                         a.div(klass='color-circle s' + str(counter + 1), role='progressbar',
-                                              style='--value:' + str(cma_metric_score_list[i].metric_scores[j]),
+                                              style='--value:' + str(focus_file.cma_scores[i][j]),
                                               **{'aria-valuemax': '100', 'aria-valuemin': '0', 'aria-valuenow': '65'})
                                 counter += 1
                     with a.div():
@@ -565,28 +567,31 @@ def air_file(files, student_info, assignment_info, report_metrics, file_stu):
             cur_file = open(path, "r")
 
             code = cur_file.read()
+            file_scores = []
+            file_complex = []
 
-            complexity_metric_scores[0] = report_metrics[file[0]]['CC']
-            complexity_metric_scores[1] = 100
-            complexity_metric_scores[2] = report_metrics[file[0]]['WMC']
-            complexity_metric_scores[3] = report_metrics[file[0]]['ABC']
+            file_complex.append(report_metrics[file[0]]['CC'])
+            file_complex.append(100)
+            file_complex.append(report_metrics[file[0]]['WMC'])
+            file_complex.append(report_metrics[file[0]]['ABC'])
+            file_scores.append(file_complex)
 
-            coupling_metric_scores[0] = report_metrics[file[0]]['COF']
-            coupling_metric_scores[1] = 70
+            file_coup_metric =[]
+            file_coup_metric.append(report_metrics[file[0]]['COF'])
+            file_coup_metric.append(70)
+            file_scores.append(file_coup_metric)
 
-            cohesion_metric_scores[0] = report_metrics[file[0]]['DIT']
-            cohesion_metric_scores[1] = report_metrics[file[0]]['MHF']
-            cohesion_metric_scores[2] = report_metrics[file[0]]['AHF']
+            file_coh_metric = [report_metrics[file[0]]['DIT'], report_metrics[file[0]]['MHF'], report_metrics[file[0]]['AHF']]
+            file_scores.append(file_coh_metric)
 
-            naming_metric_scores[0] = 100
-            naming_metric_scores[1] = 100
-            naming_metric_scores[2] = 100
+            file_name_metric = [100, 100, 100]
+            file_scores.append(file_name_metric)
 
-            general_metric_scores[0] = report_metrics[file[0]]['CP']
-            general_metric_scores[1] = report_metrics[file[0]]['TC']
+            file_general = [report_metrics[file[0]]['CP'], report_metrics[file[0]]['TC']]
+            file_scores.append(file_general)
 
-            print([complexity_metric_scores, cohesion_metric_scores, coupling_metric_scores, naming_metric_scores, general_metric_scores])
-            file_names.append(create_file(code, file[0], j, [complexity_metric_scores, cohesion_metric_scores, coupling_metric_scores, naming_metric_scores, general_metric_scores], file[1]))
+            print(file_scores)
+            file_names.append(create_file(code, file[0], j, file_scores, file[1]))
             j = j + 1
 
         print(file_names)
