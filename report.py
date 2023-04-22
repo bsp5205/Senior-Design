@@ -119,7 +119,7 @@ student_2 = create_student('Student 2', '123', submission_2)
 #next_student = student_2
 
 t = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
-threshold_list = t
+threshold_names = ['CC', 'LOC', 'WMC', 'ABC', 'COF', 'CBO', 'DIT', 'MHF', 'AHF', 'CP', 'TC', 'Class', 'Method', 'Attribute']
 
 def calc_scores_w_thresholds(t_):
     new_qma_metric_score_list = []
@@ -145,8 +145,8 @@ calc_scores_w_thresholds([0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 calc_scores_w_thresholds([50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50])
 
 
-def go_here(guy, fill):
-    print(student_list)
+def go_here(guy, fill, thresh):
+    threshold_list = thresh
     selected_student = student_list[guy]
     focus_file = selected_student.submission.file_list[fill]
 
@@ -232,10 +232,12 @@ def go_here(guy, fill):
                         for i in range(
                                 len(focus_file.coupling_scores + focus_file.cohesion_scores + focus_file.complexity_scores)):
                             with a.label():
-                                a.input(klass='change_student_secret', name='test', value=threshold_list[i])
+                                a.input(klass='change_student_secret', name=threshold_names[i], value=threshold_list[i])
                         for i in range(len(focus_file.general_scores + focus_file.naming_scores)):
                             with a.label():
-                                a.input(klass='change_student_secret', name='test', value=threshold_list[
+                                a.input(klass='change_student_secret', name=threshold_names[
+                                    i + len(focus_file.coupling_scores) + len(focus_file.cohesion_scores) + len(
+                                        focus_file.complexity_scores)], value=threshold_list[
                                     i + len(focus_file.coupling_scores) + len(focus_file.cohesion_scores) + len(
                                         focus_file.complexity_scores)])
 
@@ -511,14 +513,14 @@ def go_here(guy, fill):
                                                             with a.label():
                                                                 a.input(klass='s' + str(
                                                                     counter + 1) + ' change_file_secret file_threshold',
-                                                                        name='fuck', value=threshold_list[counter])
+                                                                        name=threshold_names[counter], value=threshold_list[counter])
                                                             counter += 1
                                                     for j in range(len(cma_metric_score_list)):
                                                         for l in range(len(cma_metric_score_list[j].metric_scores)):
                                                             with a.label():
                                                                 a.input(klass='s' + str(
                                                                     counter + 1) + ' change_file_secret file_threshold',
-                                                                        name='fuck', value=threshold_list[counter])
+                                                                        name=threshold_names[counter], value=threshold_list[counter])
                                                             counter += 1
                                                     with a.a(klass='submission-file-download icon-download float-right',
                                                              download='',
@@ -546,7 +548,10 @@ def go_here(guy, fill):
 # student_info: list of tuples holding student id, name, and submission_id
 # assignment_info: dict holding assignment name, due date, section title
 # report_metrics: Think about it
-def air_file(files, student_info, assignment_info, report_metrics, file_stu):
+def air_file(student_info, assignment_info, report_metrics, file_stu):
+    #first file empty student info to not duplicate
+    student_list.clear()
+
     # build a list of students from the student_info
     i = 0
     for student in student_info:
@@ -593,7 +598,7 @@ def air_file(files, student_info, assignment_info, report_metrics, file_stu):
         student_list.append(this_stu)
         i = i+1
 
-    a = go_here(0, 0)
+    a = go_here(0, 0, t)
 
 
 

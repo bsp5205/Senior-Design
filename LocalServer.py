@@ -54,13 +54,26 @@ def last(flask):
     # generating the metrics for all files. May take some time
     report_metrics = hr.analyze_submissions(subs)
 
-    # first submission and files
-    cur_files = hr.get_submission_file(attachments)
-    print(cur_files)
-
     # generate the air file
-    report.air_file(cur_files, student_info, assignment_info, report_metrics, file_stu)
+    report.air_file(student_info, assignment_info, report_metrics, file_stu)
 
+def appThreshes(flask_form):
+    threshes = []
+    threshes.append(flask.request.form['CC'])
+    threshes.append(flask.request.form['LOC'])
+    threshes.append(flask.request.form['WMC'])
+    threshes.append(flask.request.form['ABC'])
+    threshes.append(flask.request.form['COF'])
+    threshes.append(flask.request.form['CBO'])
+    threshes.append(flask.request.form['DIT'])
+    threshes.append(flask.request.form['MHF'])
+    threshes.append(flask.request.form['AHF'])
+    threshes.append(flask.request.form['CP'])
+    threshes.append(flask.request.form['TC'])
+    threshes.append(flask.request.form['Class'])
+    threshes.append(flask.request.form['Method'])
+    threshes.append(flask.request.form['Attribute'])
+    return threshes
 @app.route("/", methods=['GET', 'POST'])
 def index():
     print('\nThis is an example of the launch request sent by someone:')
@@ -77,26 +90,31 @@ def index():
 
 @app.route("/next_student_endpoint", methods=['POST'])
 def f():
-    print(flask.request.form)
+    #print(flask.request.form)
     stu_id = int(flask.request.form['student_list'])
 
-    report.go_here(stu_id, 0)
+    #report.go_here(stu_id, 0, )
     return render_template('airFile.html')
 
 @app.route("/prev_student_endpoint", methods=['POST'])
 def p():
-    print(flask.request.form)
-    stu_id = int(flask.request.form['student_list'])
+    print("f")
+    #print(flask.request.form)
+    #stu_id = int(flask.request.form['student_list'])
 
-    report.go_here(stu_id, 0)
-    return render_template('airFile.html')
+    #report.go_here(stu_id, 0)
+    #return render_template('airFile.html')
+    return 0
 
 @app.route("/change_student", methods=['POST'])
 def d():
     print(flask.request.form)
     stu_id = int(flask.request.form['student_list'])
 
-    report.go_here(stu_id, 0)
+    #send the threshold values to update
+    threshes = appThreshes(flask.request.form)
+
+    report.go_here(stu_id, 0, threshes)
     return render_template('airFile.html')
 
 @app.route("/change_file", methods=['POST'])
@@ -105,7 +123,10 @@ def t():
     stu_id = int(flask.request.form['student_id'])
     file_id = int(flask.request.form['file_id'])
 
-    report.go_here(stu_id, file_id)
+    # send the threshold values to update
+    threshes = appThreshes(flask.request.form)
+
+    report.go_here(stu_id, file_id, threshes)
     return render_template('airFile.html')
 
 
