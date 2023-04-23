@@ -78,8 +78,8 @@ cohesion_names = ['Depth of Inheritance (DIT)', 'Method Hiding Factor (MHF)', 'A
 naming_names = ['Class', 'Method', 'Attribute']
 general_names = ['Comment Percentage (CP)', 'Token Count (TC)']
 
-cma_observation = ['one', 'two', 'three']
-qma_observation = ['one', 'two', 'three']
+qma_observation = ['<b>ABC:</b> Compared to the size of the code, there are an excessive amount of assignmnets, branches, or conditionals. Try looking for places where unnessessary assignmnets, brances or conditionals can be avoided.','<b>MHF</b>: There are an abnormal amount of methods declared as public. Try assigning methods only meant to be accessed in the parent class as private.', '<b>AHF:</b> There are an abnormal amount of variables declared as public. Try assigning variables only meant to be accessed in the parent class as private.']
+cma_observation = []
 
 student_list = []
 
@@ -162,7 +162,7 @@ def go_here(guy, fill, thresh):
     a = Airium()
 
     with a.head():
-        a.title(_t='Title')
+        a.title(_t='Code Quality Assessor')
         a.script(src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js',
                  **{'data-require': 'd3@3.5.17', 'data-semver': '3.5.17'})
         a.script(src='https://rawgit.com/sujeetsr/d3.slider/master/d3.slider.js')

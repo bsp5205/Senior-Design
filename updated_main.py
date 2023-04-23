@@ -38,9 +38,9 @@ def assess_every_file(directory):
 
                     # OO Metrics
                     'CC': em.mcgabe_cc(m.calculate_weighted_method_per_class(tree), 100, m.calculate_SLOC(tree)),
-                    # 'SLOC': m.calculate_SLOC(tree, file),
+                    'SLOC': m.calculate_SLOC(tree),
                     'CP': em.comment_percentage(m.calculate_comment_percentage(tree, comment_count), 50),
-                    'WMC': m.calculate_weighted_method_per_class(tree),
+                    'WMC': em.mcgabe_cc(m.calculate_weighted_method_per_class(tree), 100, m.calculate_SLOC(tree)),
                     'DIT': em.cbo_dit(m.calculate_depth_of_inheritance(tree), 50),
                     'TC': pj.calculate_token_count(tree),
                     'ABC': pj.calculate_ABC(tree),

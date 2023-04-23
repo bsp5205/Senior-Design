@@ -88,23 +88,22 @@ def index():
 
     # return render_template_string(HTML String from Airium)
 
-@app.route("/next_student_endpoint", methods=['POST'])
+@app.route("/next_student", methods=['POST'])
 def f():
-    #print(flask.request.form)
-    stu_id = int(flask.request.form['student_list'])
+    print(flask.request.form)
+    #stu_id = int(flask.request.form['student_list'])
 
     #report.go_here(stu_id, 0, )
     return render_template('airFile.html')
 
 @app.route("/prev_student_endpoint", methods=['POST'])
 def p():
-    print("f")
-    #print(flask.request.form)
+    print(flask.request.form)
     #stu_id = int(flask.request.form['student_list'])
 
     #report.go_here(stu_id, 0)
     #return render_template('airFile.html')
-    return 0
+    return render_template('airFile.html')
 
 @app.route("/change_student", methods=['POST'])
 def d():
