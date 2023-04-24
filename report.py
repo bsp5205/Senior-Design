@@ -42,13 +42,29 @@ class Metric:
         assert len(new_metric_scores) == len(self.metric_scores)
         self.metric_scores = new_metric_scores
 
+# helper functions -------------------------
+def create_student(name, student_id, submission):
+    student = Student(name, student_id, submission)
+    return student
 
+def create_submission(submission_time, file_list):
+    submission = Submission(submission_time, file_list)
+    return submission
+
+def create_file(code, name, id, scores, link):
+    file = Submission_File(code, name, id, scores, link)
+    return file
+# end helper functions -------------------------
+
+# metric names -------------------------
 complexity_metric_names = ['Cyclomatic Complexity (CC)', 'Lines of Code (LOC)', 'Weighted Methods per Class (WMC)', 'ABC']
 coupling_metric_names = ['Coupling Factor (COF)', 'Coupling between objects (CBO)']
 cohesion_metric_names = ['Depth of Inheritance (DIT)', 'Method Hiding Factor (MHF)', 'Attribute Hiding Factor (AHF)']
 naming_metric_names = ['Class', 'Method', 'Attribute']
 general_metric_names = ['Comment Percentage (CP)', 'Token Count (TC)']
+# end metric names -------------------------
 
+# metric descriptions -------------------------
 complexity_metric_descriptions = ['A measure of the number of possible paths through a program\'s control flow graph. CC Determines the complexity and the potential difficulty of testing and maintaining the software. ',
                                   'A measure of the total number of lines of code in a software program. It is often used to estimate the size and complexity of the program',
                                   'A measure of the complexity of a class based on factors such as the number of control structures, method calls, and other complexity factors.',
@@ -64,69 +80,35 @@ naming_metric_descriptions = ['Extent to which a program follows language class 
 general_metric_descriptions = ['Ratio of commented lines of code.',
                                'Number of keywords, identifiers, literals, and operators. It is often used as a simple measure of program complexity or code size.',
                                'Lines should not exceed a number of characters.']
+# end metric descriptions -------------------------
 
-complexity_metric_scores = [0, 9, 0, 0]
+# global metrics for scores -------------------------
+complexity_metric_scores = [0, 0, 0, 0]
 coupling_metric_scores = [0, 0]
 cohesion_metric_scores = [0, 0, 0]
 naming_metric_scores = [0, 0, 0]
 general_metric_scores = [0, 0]
+# end global metric scores -------------------------
 
+# metric instances -------------------------
 complexity = Metric(complexity_metric_names, complexity_metric_scores, 'complexity', 'Q', complexity_metric_descriptions)
 coupling = Metric(coupling_metric_names, coupling_metric_scores, 'coupling', 'Q', coupling_metric_descriptions)
 cohesion = Metric(cohesion_metric_names, cohesion_metric_scores, 'cohesion', 'Q', cohesion_metric_descriptions)
 naming = Metric(naming_metric_names, naming_metric_scores, 'naming', 'C', naming_metric_descriptions)
 general = Metric(general_metric_names, general_metric_scores, 'general', 'C', general_metric_descriptions)
+# end metric instances -------------------------
 
-metric_list = [complexity, naming, coupling, cohesion, general]
+# metric lists for easy report generation -------------------------
 qma_metric_score_list = [complexity, coupling, cohesion]
 cma_metric_score_list = [general, naming]
+# end metric lists for easy report generation -------------------------
 
-complexity_names = ['Cyclomatic Complexity (CC)', 'Lines of Code (LOC)', 'Weighted Methods per Class (WMC)', 'ABC']
-coupling_names = ['Coupling Factor (COF)', 'Coupling between objects (CBO)']
-cohesion_names = ['Depth of Inheritance (DIT)', 'Method Hiding Factor (MHF)', 'Attribute Hiding Factor (AHF)']
-
-naming_names = ['Class', 'Method', 'Attribute']
-general_names = ['Comment Percentage (CP)', 'Token Count (TC)']
-
-qma_observation = ['<b>ABC:</b> Compared to the size of the code, there are an excessive amount of assignmnets, branches, or conditionals. Try looking for places where unnessessary assignmnets, brances or conditionals can be avoided.','<b>MHF</b>: There are an abnormal amount of methods declared as public. Try assigning methods only meant to be accessed in the parent class as private.', '<b>AHF:</b> There are an abnormal amount of variables declared as public. Try assigning variables only meant to be accessed in the parent class as private.']
+qma_observation = ['<b>ABC:</b> Compared to the size of the code, there are an excessive amount of assigments, branches, or conditionals. Try looking for places where unnessessary assignmnets, brances or conditionals can be avoided.','<b>MHF</b>: There are an abnormal amount of methods declared as public. Try assigning methods only meant to be accessed in the parent class as private.', '<b>AHF:</b> There are an abnormal amount of variables declared as public. Try assigning variables only meant to be accessed in the parent class as private.']
 cma_observation = []
 
 student_list = []
 
 assignment_link = ''
-
-def create_student(name, student_id, submission):
-    student = Student(name, student_id, submission)
-    return student
-
-def create_submission(submission_time, file_list):
-    submission = Submission(submission_time, file_list)
-    return submission
-
-def create_file(code, name, id, scores, link):
-    file = Submission_File(code, name, id, scores, link)
-    return file
-
-scores_1 = [complexity_metric_scores, cohesion_metric_scores, coupling_metric_scores, naming_metric_scores, general_metric_scores]
-scores_2 = []
-#code = 'import java.io.File;\n' + 'import java.io.FileNotFoundException;\n' + 'import java.util.Scanner;\n' + '\n' +'//\n' +'// DNAApp.java\n' +'//\n' +'// class to read in a file from the user and output the\n' +'//\n' +'// @author Kenneth Burt\n' +'//\n' +'public class DNAApp extends DNA1 {\n' +'\n' + '    public String Header;\n' +'    public String DNA = "";\n' +'    private String input;\n' +'\n' +'    public static void main(String[] args) throws FileNotFoundException {\n' +'\n' +'        Scanner keyBoard = new Scanner(System.in);\n' +'\n' +'        System.out.println("What is the name of the file?");\n' +'        input = keyBoard.nextLine();\n' +'\n' +'        File DNAFile = new File(input);\n' +'        Scanner DNAScan = new Scanner(DNAFile);\n' +'\n' +'        Header = DNAScan.nextLine();\n' +'\n' +'        int iterator = 2;\n' +'        while(DNAScan.hasNextLine()) {\n' +'            DNA = DNA + DNAScan.nextLine();\n' +'            iterator++;\n' +'        }\n' +'\n' +'        DNA ProteinCodes = new DNA(Header, DNA);\n' +'\n' +'        System.out.println(Header + "\\n" + ProteinCodes.getPCRs().toString());\n' +'    }\n' +'}\n'
-language = "java"
-#file_1 = create_file(code, 'file1', 123, scores_1, 'test1')
-file_2 = create_file('test2', 'file2', 456, scores_1, 'test2')
-#submission_1 = create_submission('December 30, 2022 at 9:37PM', [file_1, file_2])
-#student_1 = create_student('Student 1', '123', submission_1)
-
-file_3 = create_file('test3', 'file3', 789, scores_1, 'test3')
-file_4 = create_file('test4', 'file4', 101112, scores_1, 'test4')
-submission_2 = create_submission('December 30, 2022 at 9:37PM', [file_3, file_4])
-student_2 = create_student('Student 2', '123', submission_2)
-
-#student_list = [student_1, student_2]
-
-#selected_student = student_list[0]
-#focus_file = selected_student.submission.file_list[0]
-#prev_student = student_1
-#next_student = student_2
 
 t = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
 threshold_names = ['CC', 'LOC', 'WMC', 'ABC', 'COF', 'CBO', 'DIT', 'MHF', 'AHF', 'CP', 'TC', 'Class', 'Method', 'Attribute']
@@ -148,11 +130,6 @@ def calc_scores_w_thresholds(t_):
 
             new_qma_metric_score_list.append(new_value)
     print(new_qma_metric_score_list)
-
-
-calc_scores_w_thresholds([100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100])
-calc_scores_w_thresholds([0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-calc_scores_w_thresholds([50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50])
 
 
 def go_here(guy, fill, thresh):
@@ -279,19 +256,19 @@ def go_here(guy, fill, thresh):
                                     a.th(colspan='12', _t='Quality Metric Analysis Report')
                                 with a.tr():
                                     a.th(colspan='3')
-                                    a.th(colspan=len(complexity_names), _t='Complexity')
-                                    a.th(colspan=len(coupling_names), _t='Coupling')
-                                    a.th(colspan=len(cohesion_names), _t='Cohesion')
+                                    a.th(colspan=len(complexity_metric_names), _t='Complexity')
+                                    a.th(colspan=len(coupling_metric_names), _t='Coupling')
+                                    a.th(colspan=len(cohesion_metric_names), _t='Cohesion')
                                 with a.tr():
                                     a.td(_t='Student Name')
                                     a.td(_t='Student ID')
                                     a.td(_t='File')
-                                    for i in range(len(complexity_names)):
-                                        a.td(_t=complexity_names[i])
-                                    for i in range(len(coupling_names)):
-                                        a.td(_t=coupling_names[i])
-                                    for i in range(len(cohesion_names)):
-                                        a.td(_t=cohesion_names[i])
+                                    for i in range(len(complexity_metric_names)):
+                                        a.td(_t=complexity_metric_names[i])
+                                    for i in range(len(coupling_metric_names)):
+                                        a.td(_t=coupling_metric_names[i])
+                                    for i in range(len(cohesion_metric_names)):
+                                        a.td(_t=cohesion_metric_names[i])
                                 for i in range(len(student_list)):
                                     for j in range(len(student_list[i].submission.file_list)):
                                         with a.tr():
@@ -333,10 +310,10 @@ def go_here(guy, fill, thresh):
                                     a.td(_t='Student Name')
                                     a.td(_t='Student ID')
                                     a.td(_t='File')
-                                    for i in range(len(general_names)):
-                                        a.td(_t=general_names[i])
-                                    for i in range(len(naming_names)):
-                                        a.td(_t=naming_names[i])
+                                    for i in range(len(general_metric_names)):
+                                        a.td(_t=general_metric_names[i])
+                                    for i in range(len(naming_metric_names)):
+                                        a.td(_t=naming_metric_names[i])
                                 for i in range(len(student_list)):
                                     for j in range(len(student_list[i].submission.file_list)):
                                         with a.tr():
