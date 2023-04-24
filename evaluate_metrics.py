@@ -157,7 +157,6 @@ def mood_PF(result, weight):
         return 100
 
 def sloc(result, weight):
-    result *= 100
     if weight == 0:
         return 100
     percent_error = 0

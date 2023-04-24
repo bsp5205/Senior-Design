@@ -91,18 +91,23 @@ def index():
 @app.route("/next_student", methods=['POST'])
 def f():
     print(flask.request.form)
-    #stu_id = int(flask.request.form['student_list'])
+    stu_id = 1
 
-    #report.go_here(stu_id, 0, )
+    # send the threshold values to update
+    threshes = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+
+    report.go_here(stu_id, 0, threshes)
     return render_template('airFile.html')
 
-@app.route("/prev_student_endpoint", methods=['POST'])
+@app.route("/prev_student", methods=['POST'])
 def p():
     print(flask.request.form)
-    #stu_id = int(flask.request.form['student_list'])
+    stu_id = 0
 
-    #report.go_here(stu_id, 0)
-    #return render_template('airFile.html')
+    # send the threshold values to update
+    threshes = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+
+    report.go_here(stu_id, 0, threshes)
     return render_template('airFile.html')
 
 @app.route("/change_student", methods=['POST'])
