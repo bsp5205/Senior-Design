@@ -49,11 +49,21 @@ cohesion_metric_names = ['Depth of Inheritance (DIT)', 'Method Hiding Factor (MH
 naming_metric_names = ['Class', 'Method', 'Attribute']
 general_metric_names = ['Comment Percentage (CP)', 'Token Count (TC)']
 
-complexity_metric_descriptions = ['The number of independent paths through the program.', 'The number of lines of code.', 'Number of control flow statements in the method.', 'Assignments, branches, and Conditionals.']
-coupling_metric_descriptions = ['Degree of interdependence between modules.', 'Degree of interdependence objects.']
-cohesion_metric_descriptions = ['The number of levels in the class hierarchy.', 'Extent to which a class hides same-signature methods.', 'Extent to which a class hides same-name attributes.']
-naming_metric_descriptions = ['Extent to which a program follows class naming.', 'Extent to which a program follows method naming.', 'Extent to which a program follows attribute naming.']
-general_metric_descriptions = ['Ratio of commented lines.', 'Number of keywords, identifiers, literals, and operators.']
+complexity_metric_descriptions = ['A measure of the number of possible paths through a program\'s control flow graph. CC Determines the complexity and the potential difficulty of testing and maintaining the software. ',
+                                  'A measure of the total number of lines of code in a software program. It is often used to estimate the size and complexity of the program',
+                                  'A measure of the complexity of a class based on factors such as the number of control structures, method calls, and other complexity factors.',
+                                  'A metric that stands for "Assignment, Branch, Condition". The ABC metric can help to identify potentially complex or hard to maintain code']
+coupling_metric_descriptions = ['A measure of the degree to which one module or component depends on another. It indicates the strength of the relationship between two modules.',
+                                'A measure of the degree to which objects in a software system depend on each other. It indicates how closely related the functionality of objects is within a system.']
+cohesion_metric_descriptions = ['A measure of the number of ancestor classes in a class hierarchy. It indicates how far a class is from the root of the inheritance tree. ',
+                                'Indicates the degree to which the subclass modifies the behavior of the superclass. A high method hiding factor can indicate a more complex and less maintainable design.',
+                                'A measure of the number of attributes in a subclass that hide attributes in the superclass. It indicates the degree to which the subclass modifies the state of the superclass.']
+naming_metric_descriptions = ['Extent to which a program follows language class naming conventions.',
+                              'Extent to which a program follows language method naming conventions.',
+                              'Extent to which a program follows language attribute naming conventions.']
+general_metric_descriptions = ['Ratio of commented lines of code.',
+                               'Number of keywords, identifiers, literals, and operators. It is often used as a simple measure of program complexity or code size.',
+                               'Lines should not exceed a number of characters.']
 
 complexity_metric_scores = [0, 9, 0, 0]
 coupling_metric_scores = [0, 0]
