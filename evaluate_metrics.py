@@ -156,6 +156,25 @@ def mood_PF(result, weight):
     else:
         return 100
 
+def sloc(result, weight):
+    result *= 100
+    if weight == 0:
+        return 100
+    percent_error = 0
+    upper_limit = 80 + 80 * (1 - (weight / 100))
+    lower_limit = 20 - 20 * (1 - (weight / 100))
+
+    if result > upper_limit:
+        # if the result it higher than the upper limit return percent error
+        percent_error = 100 * ((upper_limit - result) / upper_limit)
+    elif result < lower_limit:
+        # if the result it lower than the lower limit return percent error
+        percent_error = 100 * ((lower_limit - result) / lower_limit)
+    else:
+        # if the result is within the limit return 1
+        return 100
+    return round(100 - abs(percent_error)) if abs(percent_error) < 100 else 0
+
 
 def main():
     # test of the functions
