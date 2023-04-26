@@ -77,6 +77,15 @@ def custom_filter_javalang_tree(tree, param):
         return_list.append(node)
     return return_list
 
+def custom_filter2(tree, param):
+    return_list = []
+
+    for i in range(len(tree.types)):
+        for x, v in tree.types[i]:
+            if type(v).__name__ == param:
+                return_list.append(v)
+    return return_list
+
 """
 :tree - The tree from javalang
 This function will return a LIST of the attributes found inside the tree.types[0] (including duplicates)

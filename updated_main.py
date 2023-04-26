@@ -46,6 +46,10 @@ def assess_every_file(directory):
                     'ABC': pj.calculate_ABC(tree),
                     #'CBO': main.calculate_coupling_between_objects(tree, cbo_tuples)
 
+                    'class': m.evaluate_class_names(tree),
+                    'var': m.evaluate_variable_names(tree),
+                    'meth': m.evaluate_method_names(tree)
+
                     # attribute_list['CBO'] = main.calculate_coupling_between_objects(tree)
                 }
             except Exception as e:

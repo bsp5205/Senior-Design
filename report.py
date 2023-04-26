@@ -1,4 +1,5 @@
 from airium import Airium
+from statistics import mean
 
 
 class Student:
@@ -103,7 +104,7 @@ qma_metric_score_list = [complexity, coupling, cohesion]
 cma_metric_score_list = [general, naming]
 # end metric lists for easy report generation -------------------------
 
-qma_observation = ['<b>ABC:</b> Compared to the size of the code, there are an excessive amount of assigments, branches, or conditionals. Try looking for places where unnessessary assignmnets, brances or conditionals can be avoided.','<b>MHF</b>: There are an abnormal amount of methods declared as public. Try assigning methods only meant to be accessed in the parent class as private.', '<b>AHF:</b> There are an abnormal amount of variables declared as public. Try assigning variables only meant to be accessed in the parent class as private.']
+qma_observation = []
 cma_observation = []
 
 student_list = []
@@ -133,6 +134,7 @@ def calc_scores_w_thresholds(t_):
 
 
 def go_here(guy, fill, thresh):
+    language = 'java'
     threshold_list = thresh
     selected_student = student_list[guy]
     focus_file = selected_student.submission.file_list[fill]
@@ -142,10 +144,16 @@ def go_here(guy, fill, thresh):
 
     num = len(student_list)
     if guy + 1 < num:
-        prev_student = student_list[guy+1]
+        next_student = student_list[guy+1]
     if guy != 0:
-        next_student = student_list[guy-1]
+        prev_student = student_list[guy-1]
 
+    if '.java' in focus_file.link:
+        language = 'Java'
+    elif '.cpp' in focus_file.link:
+        language = 'C++'
+    else:
+        language = 'C'
     a = Airium()
 
     with a.head():
@@ -184,17 +192,18 @@ def go_here(guy, fill, thresh):
                             _t='CMPSC 404')
             with a.div(klass='subheadContent subheadContent--flex-end'):
                 with a.div(klass='studentSelection'):
-                    with a.form(action='http://127.0.0.1:5000/next_student', id='next_student_form', method='post'):
+                    with a.form(action='http://127.0.0.1:5000/prev_student', id='next_student_form', method='post'):
                         with a.label():
-                            a.input(klass='secret3', name='next_student', value='123')
+                            a.input(klass='secret3', name='next_student', value=prev_student.studentID)
                         for i in range(
                                 len(focus_file.coupling_scores + focus_file.cohesion_scores + focus_file.complexity_scores)):
                             with a.label():
-                                a.input(klass='prev_student_hidden', name='prev_student_hidden',
-                                        value=threshold_list[i])
+                                a.input(klass='prev_student_hidden',  name=threshold_names[i], value=threshold_list[i])
                         for i in range(len(focus_file.general_scores + focus_file.naming_scores)):
                             with a.label():
-                                a.input(klass='prev_student_hidden', name='prev_student_hidden', value=threshold_list[
+                                a.input(klass='prev_student_hidden', name=threshold_names[
+                                    i + len(focus_file.coupling_scores) + len(focus_file.cohesion_scores) + len(
+                                        focus_file.complexity_scores)], value=threshold_list[
                                     i + len(focus_file.coupling_scores) + len(focus_file.cohesion_scores) + len(
                                         focus_file.complexity_scores)])
 
@@ -225,7 +234,7 @@ def go_here(guy, fill, thresh):
 
                     with a.form(action='http://127.0.0.1:5000/next_student', id='prev_student_form', method='post'):
                         with a.label():
-                            a.input(klass='secret3', name='next_student', value='456')
+                            a.input(klass='secret3', name='next_student', value=next_student.studentID)
                         with a.button(klass='Button Button--icon-action gradebookMoveToNext next',
                                       id='next-student-button',
                                       type='submit', **{'aria-label': 'Next'}):
@@ -237,11 +246,12 @@ def go_here(guy, fill, thresh):
                         for i in range(
                                 len(focus_file.coupling_scores + focus_file.cohesion_scores + focus_file.complexity_scores)):
                             with a.label():
-                                a.input(klass='next_student_hidden', name='next_student_hidden',
-                                        value=threshold_list[i])
+                                a.input(klass='next_student_hidden',  name=threshold_names[i], value=threshold_list[i])
                         for i in range(len(focus_file.general_scores + focus_file.naming_scores)):
                             with a.label():
-                                a.input(klass='next_student_hidden', name='next_student_hidden', value=threshold_list[
+                                a.input(klass='next_student_hidden', name=threshold_names[
+                                    i + len(focus_file.coupling_scores) + len(focus_file.cohesion_scores) + len(
+                                        focus_file.complexity_scores)], value=threshold_list[
                                     i + len(focus_file.coupling_scores) + len(focus_file.cohesion_scores) + len(
                                         focus_file.complexity_scores)])
         a.div(klass='blackOverlay', id='blackOverlay')
@@ -522,6 +532,7 @@ def air_file(student_info, assignment_info, report_metrics, file_stu):
     i = 0
     for student in student_info:
         file_names = []
+        allScores = []
         # attach the files to the first student
         j = 0
         for file in file_stu[student[0]]:
@@ -534,26 +545,26 @@ def air_file(student_info, assignment_info, report_metrics, file_stu):
             file_complex = []
 
             file_complex.append(report_metrics[file[0]]['CC'])
-            file_complex.append(100)
+            file_complex.append(report_metrics[file[0]]['SLOC'])
             file_complex.append(report_metrics[file[0]]['WMC'])
             file_complex.append(int(round(report_metrics[file[0]]['ABC'], 0)))
             file_scores.append(file_complex)
 
-            file_coup_metric =[]
+            file_coup_metric = []
             file_coup_metric.append(report_metrics[file[0]]['COF'])
-            file_coup_metric.append(70)
+            file_coup_metric.append(100)
             file_scores.append(file_coup_metric)
 
             file_coh_metric = [report_metrics[file[0]]['DIT'], report_metrics[file[0]]['MHF'], report_metrics[file[0]]['AHF']]
             file_scores.append(file_coh_metric)
 
-            file_name_metric = [100, 100, 100]
+            file_name_metric = [report_metrics[file[0]]['class'], report_metrics[file[0]]['var'], report_metrics[file[0]]['meth']]
             file_scores.append(file_name_metric)
 
             file_general = [report_metrics[file[0]]['CP'], report_metrics[file[0]]['TC']]
             file_scores.append(file_general)
 
-            print(file_scores)
+            allScores.append(file_scores)
             file_names.append(create_file(code, file[0], j, file_scores, file[1]))
             j = j + 1
 
@@ -563,6 +574,91 @@ def air_file(student_info, assignment_info, report_metrics, file_stu):
 
         student_list.append(this_stu)
         i = i+1
+
+    cc_avg = []
+    sloc_avg = []
+    wmc_avg = []
+    abc_avg = []
+
+    cof_avg = []
+    cbo_avg = []
+
+    dit_avg = []
+    mhf_avg = []
+    ahf_avg = []
+
+    var_avg = []
+    class_avg = []
+    meth_avg = []
+
+    cp_avg = []
+    tc_avg = []
+    for scores in allScores:
+        cc_avg.append(scores[0][0])
+        sloc_avg.append(scores[0][1])
+        wmc_avg.append(scores[0][2])
+        abc_avg.append(scores[0][3])
+
+        cof_avg.append(scores[1][0])
+        cbo_avg.append(scores[1][1])
+
+        dit_avg.append(scores[2][0])
+        mhf_avg.append(scores[2][1])
+        ahf_avg.append(scores[2][2])
+
+        class_avg.append(scores[3][0])
+        var_avg.append(scores[3][1])
+        meth_avg.append(scores[3][2])
+
+        cp_avg.append(scores[4][0])
+        tc_avg.append(scores[4][1])
+
+    # add the observations
+    qma_observation.clear()
+    cma_observation.clear()
+
+    if mean(cc_avg) < 50:
+        qma_observation.append(
+            '<b>CC:</b> The cyclomatic compexity is too high. Try modularizing duplicate code and shortening complex functions.')
+    if mean(sloc_avg) < 50:
+        qma_observation.append(
+            '<b>SLOC:</b> The line of code in students\' projects is too large. Try reducing the lines of code.')
+    if mean(wmc_avg) < 50:
+        qma_observation.append(
+            '<b>WMC:</b> Weighted methods per class is too high. Try reducing the number and length of methods in the code.')
+    if mean(abc_avg) < 50:
+        qma_observation.append(
+            '<b>ABC:</b> Compared to the size of the code, there are an excessive amount of assignments, branches, or conditionals. Try looking for places where unnecessary assignments, branches, or conditionals can be avoided.')
+
+    if mean(cof_avg) < 50:
+        qma_observation.append(
+            '<b>COF:</b> The coupling factor is too high. Try using more internal methods or attributes as opposed to coupled ones.')
+    if mean(cbo_avg) < 50:
+        qma_observation.append(
+            '<b>CBO:</b> The coupling between objects is too high. Try combining smaller classes that have a high number of coupled methods.')
+
+    if mean(dit_avg) < 50:
+        qma_observation.append(
+            '<b>DIT:</b> The maximum depth of inheritance of student\'s classes is too high. Try referencing external methods directly.')
+    if mean(mhf_avg) < 50:
+        qma_observation.append(
+            '<b>MHF:</b> There are an abnormal amount of methods declared as public. Try assigning methods only meant to be accessed in the parent class as private.')
+    if mean(ahf_avg) < 50:
+        qma_observation.append(
+            '<b>AHF:</b> There are an abnormal amount of variables declared as public. Try assigning variables only meant to be accessed in the parent class as private.')
+
+    if mean(class_avg) < 50:
+        cma_observation.append('<b>Class:</b> Review conventions on naming for classes.')
+    if mean(meth_avg) < 50:
+        cma_observation.append('<b>Method:</b> Review conventions on naming for methods.')
+    if mean(var_avg) < 50:
+        cma_observation.append('<b>Variable:</b> Review conventions on naming for variables.')
+
+    if mean(cp_avg) < 50:
+        cma_observation.append(
+            '<b>CP:</b> There are not enough comments in the code. Adding additional descriptions of functionality is a good way to comment code.')
+    if mean(tc_avg) < 50:
+        cma_observation.append('<b>TC:</b> The token count is abnomally low. Try adding more descriptive variables.')
 
     a = go_here(0, 0, t)
 
