@@ -55,6 +55,17 @@ def search(tree, param, field):
                 return_list.append(getattr(v, field))
     return return_list
 
+def search2(tree, param, field):
+    return_list = []
+    for i in range(len(tree.types)):
+        for x, v in tree.types[i]:
+            if type(v).__name__ == param:
+                # print('\tChecking', param, 'for', field)
+                if hasattr(v, field):
+                    # print('\t\t' + str(getattr(v, field)))
+                    return_list.append(getattr(v, field))
+    return return_list
+
 """
 :param tree - the tree
 :param param - the subclass that is being filtered for

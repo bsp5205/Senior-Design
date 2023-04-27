@@ -1,3 +1,5 @@
+import math
+
 import utilities as util
 import javalang
 
@@ -147,3 +149,33 @@ def coupled_methods(class_name, couple):
                 methods = methods + 1
     finally:
         return methods
+
+def evaluate_abc(tree):
+    # assignment
+    assignments = len(util.custom_filter2(tree, 'Assignment')) + len([ele for ele in
+                                                                      util.search2(tree, 'MemberReference',
+                                                                                   'prefix_operators') + util.search2(
+                                                                          tree, 'MemberReference', 'postfix_operators')
+                                                                      if ele != [] and ele == ['++'] or ele == ['--']])
+
+    # branches
+    branches = len(util.custom_filter2(tree, 'StatementExpression')) + len(util.custom_filter2(tree, 'ClassCreator'))
+
+    # conditions
+    conditions = len(util.search2(tree, 'IfStatement', 'else_statement')) + len(
+        [ele for ele in util.custom_filter2(tree, 'SwitchStatementCase')]) + len(
+        util.custom_filter2(tree, 'TryStatement')) + len(util.custom_filter2(tree, 'CatchClause')) + len(
+        [ele.operator for ele in util.custom_filter2(tree, 'BinaryOperation') if
+         ele.operator == '<' or ele.operator == '>' or ele.operator == '<=' or ele.operator == '>=' or ele.operator == '==' or ele.operator == '!='])
+
+    return round(math.sqrt(pow(assignments, 2) + pow(branches, 2) + pow(conditions, 2)), 2)
+
+
+def main():
+    concat_line, comment_count = util.read_file('TestAssignmentFiles/complicated.java', 0)
+    tree = javalang.parse.parse(concat_line)
+    print(evaluate_abc(tree))
+
+
+if __name__ == '__main__':
+    main()
