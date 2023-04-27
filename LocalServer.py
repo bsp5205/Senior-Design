@@ -115,7 +115,7 @@ def d():
     print(flask.request.form)
     stu_id = int(flask.request.form['student_list'])
 
-    #send the threshold values to update
+    # send the threshold values to update
     threshes = appThreshes(flask.request.form)
 
     report.go_here(stu_id, 0, threshes)

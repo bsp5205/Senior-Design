@@ -1,11 +1,5 @@
-import javalang
-import clang
-import procedural_java
-import evaluate_metrics as em
-import mood
-import re
-import handle_request as hr
 import utilities as util
+import javalang
 
 def calculate_McGabe_cyclomatic_complexity(tree):
     # https://www.theserverside.com/feature/How-to-calculate-McCabe-cyclomatic-complexity-in-Java
@@ -149,106 +143,7 @@ def coupled_methods(class_name, couple):
         invoc_method_list = util.custom_filter_javalang_tree(tree, 'javalang.tree.MethodInvocation')
         for invoc_method_num in range(len(invoc_method_list)):
             cur_method = invoc_method_list[invoc_method_num]
-            if (cur_method.qualifier == couple):
+            if cur_method.qualifier == couple:
                 methods = methods + 1
     finally:
         return methods
-
-
-def evaluate_class_names(tree):
-    class_list = util.custom_filter2(tree, 'ClassDeclaration')
-    good_count = 0
-    count = 0
-    for class_ in class_list:
-        if re.search('^[A-Z][a-zA-Z0-9]*$', class_.name):
-            good_count += 1
-
-        count += 1
-
-    print((good_count/count)*100)
-    return int(round((good_count / count) * 100, 0))
-
-
-def evaluate_method_names(tree):
-    method_list = util.custom_filter2(tree, 'MethodDeclaration')
-    good_count = 0
-    count = 0
-    for method_ in method_list:
-        if (re.search('([a-z]+[A-Z]|[A-Z]+(?![a-z]))[a-zA-Z]*', method_.name) and len(method_.name) > 10) or (
-                len(method_.name) < 10 and re.search('^[a-z]+$', method_.name)):
-            good_count += 1
-
-        count += 1
-
-    return int(round((good_count / count) * 100, 0))
-
-
-def evaluate_variable_names(tree):
-    variable_list = util.custom_filter2(tree, 'VariableDeclarator')
-    # print(class_list)
-    good_count = 0
-    count = 0
-    for variable_ in variable_list:
-        if re.search('([a-z]+[A-Z]|[A-Z]+(?![a-z]))[a-zA-Z]*', variable_.name) or (
-                re.search('^[a-z]+$', variable_.name) and len(variable_.name) < 10):
-            good_count += 1
-
-        count += 1
-
-    return int(round((good_count / count) * 100, 0))
-
-
-def evaluate_line_length(file_path, length=80):
-    with open(file_path, 'r') as file:
-        good_count = 0
-        count = 0
-        for line in file:
-            if len(line) < length:
-                good_count += 1
-            count += 1
-
-    return int(round((good_count / count) * 100, 0))
-
-def main(path):
-    # get the concat file
-    concat_line, comment_count = util.read_file(path, 0)
-
-    # check if the path contains .java to use the proper library
-    if '.java' in path:
-        # create the tree
-        tree = javalang.parse.parse(concat_line)
-
-        # script tests
-        print('OO Metrics:')
-        print('calculate_McGabe_cyclomatic_complexity:', calculate_McGabe_cyclomatic_complexity(tree))
-        print('calculate_SLOC:', calculate_SLOC(tree))
-        print('calculate_comment_percentage:', calculate_comment_percentage(tree, comment_count))
-        print('calculate_weighted_method_per_class:', calculate_weighted_method_per_class(tree))
-        print('calculate_depth_of_inheritance:', calculate_depth_of_inheritance(tree))
-        # print('calculate_coupling_between_objects:', calculate_coupling_between_objects(tree, cbo_tuples))
-
-        print('\ncalculate_method_hiding_factor:', mood.calculate_method_hiding_factor(tree))
-        print('calculate_attribute_hiding_factor:', mood.calculate_attribute_hiding_factor(tree))
-        print('calculate_method_inheritance_factor:', mood.calculate_method_inheritance_factor(tree))
-        print('calculate_attribute_inheritance_factor:', mood.calculate_attribute_inheritance_factor(tree))
-        print('calculate_coupling_factor:', mood.calculate_coupling_factor(tree))
-        print('calculate_polymorphism_factor:', mood.calculate_polymorphism_factor(tree))
-
-        print('\nProcedural Metrics:')
-        procedural_java.main()
-
-        print("\nMetric score evaluation")
-        print("CP Result: ", em.comment_percentage(calculate_comment_percentage(tree, comment_count), 50))
-        print("CC Result: ", em.mcgabe_cc(calculate_weighted_method_per_class(tree), 100, calculate_SLOC(tree)))
-        print("CBO/DIT Result:", em.cbo_dit(calculate_depth_of_inheritance(tree), 50))
-        print("--Mood Results--")
-        print("MHF: ", em.mood_MHF(mood.calculate_method_hiding_factor(tree), 50))
-        print("AHF: ", em.mood_AHF(mood.calculate_attribute_hiding_factor(tree), 50))
-        print("MIF: ", em.mood_MIF(mood.calculate_method_inheritance_factor(tree), 50))
-        print("AIF: ", em.mood_AIF(mood.calculate_attribute_inheritance_factor(tree), 50))
-        print("CF: ", em.mood_CF(mood.calculate_coupling_factor(tree), 50))
-        print("PF: ", em.mood_PF(mood.calculate_polymorphism_factor(tree), 50))
-
-
-if __name__ == '__main__':
-    main()

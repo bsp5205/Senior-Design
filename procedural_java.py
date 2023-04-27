@@ -60,13 +60,13 @@ def calculate_ABC(tree):
     abc = math.sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2))
 
     # Assess quality
-    if(abc <= 10):
+    if abc <= 10:
         quality = "Best"
-    elif(abc <= 20):
+    elif abc <= 20:
         quality = "Good"
-    elif(abc <= 40):
+    elif abc <= 40:
         quality = "Needs refactoring"
-    elif(abc <= 60):
+    elif abc <= 60:
         quality = "Needs justifying"
     else:
         quality = "Unacceptable"
