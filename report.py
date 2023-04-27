@@ -105,7 +105,7 @@ cma_metric_score_list = [general, naming]
 
 qma_observation = ['<b>ABC:</b> Compared to the size of the code, there are an excessive amount of assigments, branches, or conditionals. Try looking for places where unnessessary assignmnets, brances or conditionals can be avoided.','<b>MHF</b>: There are an abnormal amount of methods declared as public. Try assigning methods only meant to be accessed in the parent class as private.', '<b>AHF:</b> There are an abnormal amount of variables declared as public. Try assigning variables only meant to be accessed in the parent class as private.']
 cma_observation = []
-
+language = 'java'
 student_list = []
 
 assignment_link = ''
