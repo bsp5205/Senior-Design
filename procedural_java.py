@@ -2,7 +2,7 @@ import javalang
 import utilities as util
 import math
 
-file_name = 'main.java'
+file_name = 'TestAssignmentFiles/main.java'
 
 # Calculate kilo lines of code (KLOC)
 def calculate_KLOC(tree):
@@ -156,7 +156,7 @@ def add_operator(tree, param, attribute):
 
 # Find all parenthesis and curly brackets and add to dictionary
 def add_symbol_operators():
-    with open('main.java', 'r') as file:
+    with open('TestAssignmentFiles/main.java', 'r') as file:
         lines = file.readlines()
 
     for line in lines:
@@ -249,7 +249,7 @@ def print_all(tree):
     # print('MCC: ' + str(calculate_MMCC(tree)))
     
 def main():
-    path = 'main.java'
+    path = 'TestAssignmentFiles/main.java'
 
     concat_line, comment_count = util.read_file(path, 0)
     tree = javalang.parse.parse(concat_line)
