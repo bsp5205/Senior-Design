@@ -1,3 +1,4 @@
+import math
 import javalang
 import clang
 import procedural_java
@@ -6,6 +7,26 @@ import mood
 import re
 import handle_request as hr
 import utilities as util
+
+def evaluate_abc(tree):
+    # assignment
+    assignments = len(util.custom_filter2(tree, 'Assignment')) + len([ele for ele in
+                                                                      util.search2(tree, 'MemberReference',
+                                                                                   'prefix_operators') + util.search2(
+                                                                          tree, 'MemberReference', 'postfix_operators')
+                                                                      if ele != [] and ele == ['++'] or ele == ['--']])
+
+    # branches
+    branches = len(util.custom_filter2(tree, 'StatementExpression')) + len(util.custom_filter2(tree, 'ClassCreator'))
+
+    # conditions
+    conditions = len(util.search2(tree, 'IfStatement', 'else_statement')) + len(
+        [ele for ele in util.custom_filter2(tree, 'SwitchStatementCase')]) + len(
+        util.custom_filter2(tree, 'TryStatement')) + len(util.custom_filter2(tree, 'CatchClause')) + len(
+        [ele.operator for ele in util.custom_filter2(tree, 'BinaryOperation') if
+         ele.operator == '<' or ele.operator == '>' or ele.operator == '<=' or ele.operator == '>=' or ele.operator == '==' or ele.operator == '!='])
+
+    return round(math.sqrt(pow(assignments, 2) + pow(branches, 2) + pow(conditions, 2)), 2)
 
 def calculate_McGabe_cyclomatic_complexity(tree):
     # https://www.theserverside.com/feature/How-to-calculate-McCabe-cyclomatic-complexity-in-Java

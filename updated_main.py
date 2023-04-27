@@ -1,5 +1,4 @@
 import main
-import handle_request
 import os
 import mood
 import utilities as util
