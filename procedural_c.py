@@ -260,9 +260,6 @@ def print_all(filename):
 
 # Main function
 def main():
-    # ci.Config.set_library_file("C:/Users/Alex/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0/LocalCache/local-packages/Python310/site-packages/clang/native/libclang.dll");
-    print_all()
-    
     dir_path = os.path.dirname(os.path.realpath(__file__))
     ci.Config.set_library_file(dir_path + '/libclang.dll')
     print_all('TestAssignmentFiles/even.c')
