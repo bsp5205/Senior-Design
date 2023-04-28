@@ -12,6 +12,7 @@ import LocalServer
 import procedural_java as pj
 
 
+
 # Assess every file in given directory
 def assess_every_file(directory):
     attribute_list = {}
@@ -63,8 +64,10 @@ def assess_every_file(directory):
         elif file.endswith(".cpp") or file.endswith(".c"):
             try:
                 # Clang setup
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+                ci.Config.set_library_file(dir_path + '/libclang.dll')
                 index = ci.Index.create()
-                tu = index.parse(file)
+                tu = index.parse("TestAssignmentFiles/" + file)
                 filename = tu.spelling
 
                 attribute_list[file] = {
@@ -81,6 +84,7 @@ def assess_every_file(directory):
                     'TC': proc.token_count(tu.cursor)
                 }
             except Exception as e:
+                print(e)
                 print("C/C++ Analysis Failed")
                 exec_type, exec_obj, exec_tb = sys.exc_info()
                 fname = os.path.split(exec_tb.tb_frame.f_code.co_filename)[1]
@@ -97,6 +101,7 @@ def assess_every_file(directory):
     print(attribute_list)
     return attribute_list
 
+
 def main():
     # Launch the application generates the airium original html
     LocalServer.run_app()
@@ -104,11 +109,6 @@ def main():
     # m.main('TestAssignmentFiles/simple.java')
     assess_every_file('TestAssignmentFiles')
 
-    # Example of find_all_file_metrics
-    # print(find_all_file_metrics('DNA.java'))
-
-    # Example of find_file_metric
-    # print(find_file_metric('DNA.java', 'MIF'))
 
 if __name__ == '__main__':
     main()
