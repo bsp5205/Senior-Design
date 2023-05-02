@@ -12,6 +12,10 @@ import LocalServer
 import procedural_java as pj
 
 
+def config_set():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    ci.Config.set_library_file(dir_path + '/libclang.dll')
+    return
 
 # Assess every file in given directory
 def assess_every_file(directory):
@@ -64,8 +68,6 @@ def assess_every_file(directory):
         elif file.endswith(".cpp") or file.endswith(".c"):
             try:
                 # Clang setup
-                dir_path = os.path.dirname(os.path.realpath(__file__))
-                ci.Config.set_library_file(dir_path + '/libclang.dll')
                 index = ci.Index.create()
                 tu = index.parse("TestAssignmentFiles/" + file)
                 filename = tu.spelling

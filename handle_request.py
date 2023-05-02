@@ -77,6 +77,7 @@ def get_submission_file(attachments):
 # this method will leverage other methods to generate the metrics dict
 def analyze_submissions(subs):
     report_metrics = {}
+    um.config_set()
     for sub in subs:
         if sub.attributes['submission_type'] == 'online_upload':
             attachs = sub.attributes['attachments']

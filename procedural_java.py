@@ -82,7 +82,7 @@ def calculate_Halstead_ops(tree):
     N1, N2 = 0, 0
 
     # Add operator to list
-    add_symbol_operators()
+    #add_symbol_operators()
     add_operator(tree, javalang.tree.ReferenceType, 'name')
     add_operator(tree, javalang.tree.Invocation, 'member')
     add_operator(tree, javalang.tree.Declaration, 'modifiers')

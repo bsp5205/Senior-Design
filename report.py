@@ -114,6 +114,7 @@ assignment_link = ''
 t = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
 threshold_names = ['CC', 'LOC', 'WMC', 'ABC', 'COF', 'CBO', 'DIT', 'MHF', 'AHF', 'CP', 'TC', 'Class', 'Method', 'Attribute']
 
+
 def calc_scores_w_thresholds(t_):
     new_qma_metric_score_list = []
     for metric in qma_metric_score_list:
@@ -134,7 +135,6 @@ def calc_scores_w_thresholds(t_):
 
 
 def go_here(guy, fill, thresh):
-    language = 'java'
     threshold_list = thresh
     selected_student = student_list[guy]
     focus_file = selected_student.submission.file_list[fill]
@@ -150,10 +150,18 @@ def go_here(guy, fill, thresh):
 
     if '.java' in focus_file.link:
         language = 'Java'
+        threshold_names = ['CC', 'LOC', 'WMC', 'ABC', 'COF', 'CBO', 'DIT', 'MHF', 'AHF', 'CP', 'TC', 'Class', 'Method',
+                           'Attribute']
+
     elif '.cpp' in focus_file.link:
         language = 'C++'
+        threshold_names = ['ABC', 'ELOC', 'KLOC', 'N', 'n', 'V', 'D', 'L', 'E', 'B', 'TC',]
+
+
     else:
         language = 'C'
+        threshold_names = ['ABC', 'ELOC', 'KLOC', 'N', 'n', 'V', 'D', 'L', 'E', 'B', 'TC']
+
     a = Airium()
 
     with a.head():
@@ -544,25 +552,40 @@ def air_file(student_info, assignment_info, report_metrics, file_stu):
             file_scores = []
             file_complex = []
 
-            file_complex.append(report_metrics[file[0]]['CC'])
-            file_complex.append(report_metrics[file[0]]['SLOC'])
-            file_complex.append(report_metrics[file[0]]['WMC'])
-            file_complex.append(int(round(report_metrics[file[0]]['ABC'], 0)))
-            file_scores.append(file_complex)
+            if '.java' in file[0]:
+                file_complex.append(report_metrics[file[0]]['CC'])
+                file_complex.append(report_metrics[file[0]]['SLOC'])
+                file_complex.append(report_metrics[file[0]]['WMC'])
+                file_complex.append(int(round(report_metrics[file[0]]['ABC'], 0)))
+                file_scores.append(file_complex)
 
-            file_coup_metric = []
-            file_coup_metric.append(report_metrics[file[0]]['COF'])
-            file_coup_metric.append(100)
-            file_scores.append(file_coup_metric)
+                file_coup_metric = []
+                file_coup_metric.append(report_metrics[file[0]]['COF'])
+                file_coup_metric.append(100)
+                file_scores.append(file_coup_metric)
 
-            file_coh_metric = [report_metrics[file[0]]['DIT'], report_metrics[file[0]]['MHF'], report_metrics[file[0]]['AHF']]
-            file_scores.append(file_coh_metric)
+                file_coh_metric = [report_metrics[file[0]]['DIT'], report_metrics[file[0]]['MHF'], report_metrics[file[0]]['AHF']]
+                file_scores.append(file_coh_metric)
 
-            file_name_metric = [report_metrics[file[0]]['class'], report_metrics[file[0]]['var'], report_metrics[file[0]]['meth']]
-            file_scores.append(file_name_metric)
+                file_name_metric = [report_metrics[file[0]]['class'], report_metrics[file[0]]['var'], report_metrics[file[0]]['meth']]
+                file_scores.append(file_name_metric)
 
-            file_general = [report_metrics[file[0]]['CP'], report_metrics[file[0]]['TC']]
-            file_scores.append(file_general)
+                file_general = [report_metrics[file[0]]['CP'], report_metrics[file[0]]['TC']]
+                file_scores.append(file_general)
+
+            elif '.c' in file[0]:
+                file_scores.append([report_metrics[file[0]]['ABC']])
+                file_scores.append([])
+                file_scores.append([])
+                file_scores.append([])
+                file_scores.append([report_metrics[file[0]]['ELOC'], int(round(report_metrics[file[0]]['KLOC'], 0)),
+                                   report_metrics[file[0]]['N'], report_metrics[file[0]]['n'],
+                                   int(round(report_metrics[file[0]]['V'], 0)), int(round(report_metrics[file[0]]['D'], 0)),
+                                   report_metrics[file[0]]['L'], int(round(report_metrics[file[0]]['E'], 0)),
+                                   int(round(report_metrics[file[0]]['B'], 0)), report_metrics[file[0]]['TC']])
+
+
+                print(report_metrics)
 
             allScores.append(file_scores)
             file_names.append(create_file(code, file[0], j, file_scores, file[1]))
